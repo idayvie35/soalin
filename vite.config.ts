@@ -8,7 +8,8 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+  base: '/soalin/',
+  plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(rootDir, '.'),
