@@ -1,0 +1,3489 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIT PLUS CORDOVA — Generator Soal &amp; Latihan Hijaiyah (SD–SMA)</title>
+  <meta name="description" content="Aplikasi standalone SIT PLUS CORDOVA (Sekolah Islam Terpadu Plus Cordova SD–SMA, pengampu Ustdz Mulyadi, S.T.) untuk membuat soal ujian, latihan memisah & menyambung huruf hijaiyah Bahasa Arab, serta menulis ulang kalimat siap cetak PDF, Word, dan Blogger." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --navy: #0F294A;
+      --navy-hover: #163B69;
+      --emerald: #059669;
+      --emerald-soft: #ECFDF5;
+      --emerald-border: #A7F3D0;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --muted: #64748B;
+      --danger: #DC2626;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, .font-display {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      margin: 0;
+    }
+    .font-arabic {
+      font-family: "Noto Naskh Arabic", "Amiri", "Traditional Arabic", serif;
+      line-height: 2.1;
+    }
+    .font-mono {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 18px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--navy);
+      color: #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+      margin-top: -2px;
+    }
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: #475569;
+      padding: 8px 14px;
+      min-height: 40px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { background: #F1F5F9; color: var(--text); }
+    .tab-btn.active {
+      background: var(--navy);
+      color: #FFFFFF;
+    }
+    .container {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 22px 18px 80px;
+      flex: 1;
+    }
+    .page-head {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .page-head p {
+      margin: 4px 0 0;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+    .card + .card { margin-top: 18px; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .section-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+    .input, .select, .textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #F8FAFC;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13.5px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .textarea { min-height: 82px; resize: vertical; }
+    .input:focus, .select:focus, .textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      background: #FFFFFF;
+    }
+    .row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .field { margin-bottom: 13px; }
+    .field:last-child { margin-bottom: 0; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--navy);
+      background: var(--navy);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease;
+    }
+    .btn:hover { background: var(--navy-hover); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sec {
+      background: #FFFFFF;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-sec:hover { background: #F1F5F9; }
+    .btn-emerald {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #FFFFFF;
+    }
+    .btn-emerald:hover { background: #047857; }
+    .btn-emerald-soft {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+      color: #065F46;
+    }
+    .btn-emerald-soft:hover { background: #D1FAE5; }
+    .btn-danger {
+      background: #FFFFFF;
+      border-color: #FECACA;
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: #FEF2F2; }
+    .btn-sm {
+      min-height: 34px;
+      padding: 5px 11px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+    .types-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .type-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #FFFFFF;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .type-box.active {
+      border-color: var(--navy);
+      background: #F8FAFC;
+    }
+    .type-box.arabic-special.active {
+      border-color: var(--emerald);
+      background: #F0FDF4;
+    }
+    .type-info { min-width: 0; flex: 1; }
+    .type-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .type-desc {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .step-btn {
+      width: 32px;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #FFFFFF;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-btn:hover { background: #F1F5F9; }
+    .step-val {
+      width: 46px;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 13px;
+      background: #FFFFFF;
+      color: var(--text);
+    }
+    .word-config-box {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--emerald-border);
+      background: #F0FDF4;
+      border-radius: 12px;
+    }
+    .word-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .pill-btn {
+      min-height: 34px;
+      padding: 5px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--emerald-border);
+      background: #FFFFFF;
+      color: #064E3B;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pill-btn.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #FFFFFF;
+    }
+    .summary-cta {
+      margin-top: 16px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      border-radius: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .sub-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      border-radius: 8px;
+      font-size: 12.5px;
+      margin-top: 6px;
+    }
+    .bloom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .bloom-btn {
+      min-height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .bloom-btn.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #FFFFFF;
+    }
+    .q-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .q-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .q-prompt {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      text-align: left;
+      direction: ltr;
+    }
+    .q-prompt.rtl {
+      font-family: "Noto Naskh Arabic", "Amiri", serif;
+      font-size: 21px;
+      font-weight: 500;
+      line-height: 2.15;
+      text-align: right;
+      direction: rtl;
+    }
+    .q-stimulus {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      text-align: left;
+      direction: ltr;
+    }
+    .q-stimulus.rtl {
+      font-family: "Noto Naskh Arabic", "Amiri", serif;
+      font-size: 24px;
+      line-height: 2.2;
+      text-align: right;
+      direction: rtl;
+    }
+    .hijaiyah-boxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hijaiyah-box {
+      width: 42px;
+      height: 36px;
+      border: 1px solid #CBD5E1;
+      border-radius: 7px;
+      background: #FFFFFF;
+      display: inline-block;
+    }
+    .write-lines {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .write-line {
+      border-bottom: 1.5px dotted #94A3B8;
+      height: 22px;
+    }
+    .answer-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      font-size: 13px;
+      color: #064E3B;
+    }
+    .print-sheet {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 840px;
+      margin: 0 auto;
+    }
+    .kop {
+      text-align: center;
+      border-bottom: 3px double #0F172A;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-bottom: 12px;
+    }
+    .sheet-table td {
+      border: 1px solid #CBD5E1;
+      padding: 6px 10px;
+      width: 50%;
+    }
+    .toast-wrap {
+      position: fixed;
+      right: 16px;
+      bottom: 20px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 340px;
+    }
+    .toast {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--emerald);
+      border-radius: 10px;
+      padding: 11px 14px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      font-size: 13px;
+    }
+    .conn-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+    .conn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: var(--emerald-soft);
+      color: #065F46;
+      border: 1px solid var(--emerald-border);
+    }
+    .conn-pill.warn {
+      background: #FFFBEB;
+      color: #92400E;
+      border-color: #FDE68A;
+    }
+    .conn-pill.err {
+      background: #FEF2F2;
+      color: #991B1B;
+      border-color: #FECACA;
+    }
+    .progress-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #BFDBFE;
+      background: #EFF6FF;
+      font-size: 12.5px;
+      color: #1E3A8A;
+    }
+    .progress-track {
+      height: 7px;
+      background: #DBEAFE;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--navy);
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+    .err-banner {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #FECACA;
+      background: #FEF2F2;
+      color: #991B1B;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .q-visual {
+      margin: 10px 0;
+      text-align: center;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .q-visual svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .kisi-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      line-height: 1.35;
+      margin-top: 8px;
+    }
+    .kisi-table th, .kisi-table td {
+      border: 1px solid #94A3B8;
+      padding: 5px 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .kisi-table th {
+      background: #E2E8F0;
+      color: #0F294A;
+      font-weight: 700;
+    }
+    .kisi-table tr:nth-child(even) td {
+      background: #F8FAFC;
+    }
+    .print-sheet.compact {
+      padding: 18px 20px;
+      font-size: 12px;
+      line-height: 1.38;
+    }
+    .print-sheet.compact .kop {
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      border-bottom-width: 2px;
+    }
+    .print-sheet.compact .sheet-table {
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .print-sheet.compact .sheet-table td {
+      padding: 3px 7px;
+    }
+    .opts-2col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px 16px;
+    }
+    .keys-2col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+    }
+    .arabic-khat-guides {
+      background-image:
+        linear-gradient(to bottom, transparent 24%, rgba(148, 163, 184, 0.35) 24%, rgba(148, 163, 184, 0.35) 25%, transparent 25%),
+        linear-gradient(to bottom, transparent 54%, rgba(100, 116, 139, 0.4) 54%, rgba(100, 116, 139, 0.4) 55.5%, transparent 55.5%),
+        linear-gradient(to bottom, transparent 82%, rgba(148, 163, 184, 0.35) 82%, rgba(148, 163, 184, 0.35) 83%, transparent 83%);
+    }
+    .arabic-trace-text {
+      font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif;
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 1.9;
+      word-spacing: 0.14em;
+      color: #F8FAFC;
+      -webkit-text-stroke: 1.8px #64748B;
+      paint-order: stroke fill;
+    }
+    .arabic-color-text {
+      font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif;
+      font-size: 64px;
+      font-weight: 700;
+      line-height: 1.85;
+      word-spacing: 0.16em;
+      color: #FFFFFF;
+      -webkit-text-stroke: 4px #0F172A;
+      paint-order: stroke fill;
+    }
+    .arabic-a4-big-card {
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      background: #FFFFFF;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+    .rpp-section-box {
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      background: #FFFFFF;
+    }
+    .rpp-section-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #E2E8F0;
+      padding-bottom: 3px;
+    }
+    .hidden { display: none !important; }
+
+    @media (max-width: 960px) {
+      .layout-grid { grid-template-columns: 1fr; }
+      .types-grid { grid-template-columns: 1fr; }
+      .row-2 { grid-template-columns: 1fr; }
+      .print-sheet { padding: 18px; }
+      .opts-2col, .keys-2col { grid-template-columns: 1fr; }
+    }
+    @media print {
+      @page {
+        size: A4;
+        margin: 9mm 10mm 10mm 10mm;
+      }
+      body { background: #FFFFFF !important; font-size: 9.5pt; line-height: 1.35; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none !important; }
+      .container { max-width: 100%; padding: 0; margin: 0; }
+      .print-sheet, .print-sheet.compact { border: none; padding: 0; max-width: 100%; box-shadow: none; }
+      .print-break { page-break-before: always; break-before: page; }
+      .print-break-after { page-break-after: always; break-after: page; }
+      .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+      .arabic-a4-big-card {
+        min-height: 104mm !important;
+        padding: 10px 14px !important;
+        margin-bottom: 5mm !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .arabic-trace-text {
+        font-size: 52px !important;
+        line-height: 1.8 !important;
+        color: #F8FAFC !important;
+        -webkit-text-stroke: 1.6px #64748B !important;
+      }
+      .arabic-color-text {
+        font-size: 64px !important;
+        line-height: 1.8 !important;
+        color: #FFFFFF !important;
+        -webkit-text-stroke: 3.8px #0F172A !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Header Navigation -->
+  <header class="topbar no-print">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">SC</div>
+        <div>
+          <span class="brand-title">SIT PLUS CORDOVA <span style="font-weight:500;color:#059669;font-size:12px;">SD–SMA</span></span>
+          <span class="brand-sub">Sekolah Islam Terpadu Plus Cordova · Ustdz Mulyadi, S.T.</span>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Navigasi">
+        <button type="button" class="tab-btn active" data-tab="generator" onclick="App.setTab('generator')">Buat Soal</button>
+        <button type="button" class="tab-btn" data-tab="editor" onclick="App.setTab('editor')">Editor &amp; Preview (<span id="nav-q-count">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="kisi" onclick="App.setTab('kisi')">Kisi-Kisi (Kurmer)</button>
+        <button type="button" class="tab-btn" data-tab="rpp" onclick="App.setTab('rpp')">RPP (Kurmer)</button>
+        <button type="button" class="tab-btn" data-tab="export" onclick="App.setTab('export')">Cetak A4 / Word / Blogger</button>
+        <button type="button" class="tab-btn" data-tab="settings" onclick="App.setTab('settings')">Kop &amp; Koneksi AI</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: GENERATOR -->
+    <section id="view-generator">
+      <div class="page-head">
+        <div>
+          <h1 style="font-size:23px;">Buat Paket Soal Otomatis (Live AI Studio &amp; GAS)</h1>
+          <p>Lengkap dengan variasi <strong>Memisah &amp; Menyambung Huruf Hijaiyah</strong> serta <strong>Menulis Ulang Kalimat (1 kata, 2 kata, 3 kata, dst.)</strong>. Terhubung langsung dengan Google Apps Script &amp; Google AI Studio (Gemini).</p>
+        </div>
+        <button type="button" class="btn btn-emerald-soft btn-sm" onclick="App.applyPreset('hijaiyah')">
+          Muat Contoh Arab: Hijaiyah &amp; Tulis Ulang (12 Soal)
+        </button>
+      </div>
+
+      <!-- Live Connection Quick Bar -->
+      <div class="conn-bar no-print">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="conn-pill" id="live-conn-badge">Memeriksa koneksi...</span>
+          <span style="font-size:12px;color:var(--muted);" id="live-conn-desc">Mode Live menggunakan Google AI Studio (Gemini)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1;justify-content:flex-end;min-width:260px;">
+          <select id="quick-ai-mode" class="select" style="width:auto;min-height:36px;padding:6px 10px;font-size:12.5px;" onchange="App.setAiMode(this.value)">
+            <option value="gas">Google Apps Script (GAS Live + AI Studio)</option>
+            <option value="server">Server AI Studio (/api/ai/generate-stream)</option>
+            <option value="offline">Mode Offline Lokal (Tanpa AI)</option>
+          </select>
+          <input id="quick-gas-url" class="input" style="max-width:300px;min-height:36px;padding:6px 10px;font-size:12px;" placeholder="Tempel URL Web App GAS (https://script.google.com/.../exec)" onchange="App.saveQuickGasUrl(this.value)" />
+          <button type="button" class="btn btn-sec btn-sm" style="min-height:36px;" onclick="App.testConnection()">Tes Koneksi</button>
+        </div>
+      </div>
+
+      <div class="layout-grid">
+        <!-- LEFT COLUMN: 01 & 03 -->
+        <div>
+          <div class="card">
+            <div class="section-head">
+              <h2 class="section-title">01. Materi, Jenjang, Kelas &amp; Bahasa</h2>
+              <span style="font-size:11.5px;color:var(--muted);">Wajib diisi</span>
+            </div>
+
+            <div class="field">
+              <label class="label" for="inp-title">Judul Materi Utama</label>
+              <input id="inp-title" class="input" placeholder="Contoh: Peralatan Sekolah (الأَدَوَاتُ الْمَدْرَسِيَّةُ) atau Ekosistem" />
+            </div>
+
+            <div class="field">
+              <label class="label">Subjudul / Pokok Bahasan (Bisa lebih dari satu)</label>
+              <div style="display:flex;gap:8px;">
+                <input id="inp-sub-draft" class="input" placeholder="Ketik subbab lalu tekan Tambah..." onkeydown="if(event.key==='Enter'){event.preventDefault();App.addSubtitle();}" />
+                <button type="button" class="btn btn-sec" onclick="App.addSubtitle()">Tambah</button>
+              </div>
+              <div id="subtitles-list"></div>
+            </div>
+
+            <div class="row-2 field">
+              <div>
+                <label class="label" for="inp-level">Jenjang Pendidikan</label>
+                <select id="inp-level" class="select" onchange="App.onLevelChange(this.value)">
+                  <option value="SD">SD / MI</option>
+                  <option value="SMP">SMP / MTs</option>
+                  <option value="SMA/SMK">SMA / SMK</option>
+                  <option value="MA">MA / Pesantren</option>
+                  <option value="Perguruan Tinggi">Perguruan Tinggi</option>
+                  <option value="Umum">Umum</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="inp-grade">Kelas / Tingkat</label>
+                <select id="inp-grade" class="select" onchange="App.onGradeSelectChange(this.value)"></select>
+                <input id="inp-grade-custom" class="input" style="margin-top:6px;min-height:34px;padding:4px 10px;font-size:12px;" placeholder="Atau ketik kelas khusus (mis. Kelas 4B)" onchange="App.onGradeCustomChange(this.value)" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="inp-lang">Bahasa Soal</label>
+              <select id="inp-lang" class="select">
+                <option value="Bilingual (Arab-Indonesia)">Bilingual (Arab-Indonesia)</option>
+                <option value="Arab">Arab (Fusha)</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Inggris">Inggris</option>
+              </select>
+            </div>
+
+            <div class="row-2 field">
+              <div>
+                <label class="label" for="inp-subject">Mata Pelajaran</label>
+                <select id="inp-subject" class="select">
+                  <option value="Bahasa Arab">Bahasa Arab</option>
+                  <option value="Nahwu & Sharaf">Nahwu &amp; Sharaf</option>
+                  <option value="Imla & Khat">Imla &amp; Khat (Hijaiyah)</option>
+                  <option value="Fiqih & Ushul Fiqih">Fiqih &amp; Ushul Fiqih</option>
+                  <option value="Al-Quran & Tafsir">Al-Quran &amp; Tafsir</option>
+                  <option value="Hadis & Ilmu Hadis">Hadis &amp; Ilmu Hadis</option>
+                  <option value="Aqidah Akhlak">Aqidah Akhlak</option>
+                  <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                  <option value="Bahasa Inggris">Bahasa Inggris</option>
+                  <option value="Ilmu Pengetahuan Alam (IPA)">Ilmu Pengetahuan Alam (IPA)</option>
+                  <option value="Matematika">Matematika</option>
+                  <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="inp-harakat">Mode Harakat (Bahasa Arab)</label>
+                <select id="inp-harakat" class="select">
+                  <option value="Penuh (Syakal Lengkap)">Penuh (Syakal Lengkap)</option>
+                  <option value="Sebagian (Kata Kunci)">Sebagian (Kata Kunci)</option>
+                  <option value="Tanpa Harakat (Gundul)">Tanpa Harakat (Gundul)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="inp-custom-words">Daftar Kata / Kalimat Kustom (Opsional — 1 baris per kata/kalimat)</label>
+              <textarea id="inp-custom-words" class="textarea font-arabic" dir="ltr" style="text-align:left;" placeholder="Masukkan kata atau kalimat Arab/Indonesia sendiri jika ingin langsung dijadikan soal pisah/sambung hijaiyah &amp; tulis ulang. Contoh:&#10;مَدْرَسَةٌ&#10;كِتَابٌ جَدِيدٌ&#10;يَقْرَأُ التِّلْمِيْذُ الْكِتَابَ"></textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <h2 class="section-title">03. Pengaturan Kualitas &amp; Taksonomi</h2>
+            </div>
+
+            <div class="row-2 field">
+              <div>
+                <label class="label" for="inp-diff">Tingkat Kesulitan</label>
+                <select id="inp-diff" class="select">
+                  <option value="Mudah">Mudah</option>
+                  <option value="Sedang">Sedang</option>
+                  <option value="Sulit">Sulit</option>
+                  <option value="Campuran" selected>Campuran</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="inp-tier">Orientasi Berpikir</label>
+                <select id="inp-tier" class="select">
+                  <option value="LOTS">LOTS (C1-C2)</option>
+                  <option value="MOTS">MOTS (C3)</option>
+                  <option value="HOTS">HOTS (C4-C6)</option>
+                  <option value="Campuran" selected>Campuran</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Level Kognitif Taksonomi Bloom</label>
+              <div class="bloom-grid" id="bloom-grid"></div>
+            </div>
+
+            <div class="field" style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+              <label style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--border);border-radius:10px;cursor:pointer;">
+                <span>Acak Urutan Soal Otomatis</span>
+                <input type="checkbox" id="chk-shuffle-q" />
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--border);border-radius:10px;cursor:pointer;">
+                <span id="lbl-shuffle-opt">Acak Pilihan Jawaban (A–E / أ–هـ)</span>
+                <input type="checkbox" id="chk-shuffle-opt" checked />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: 02. Variasi Jenis & Custom Jumlah Soal -->
+        <div>
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">02. Variasi Jenis &amp; Custom Jumlah Soal</h2>
+                <p style="margin:2px 0 0;font-size:12px;color:var(--muted);">Termasuk variasi khusus Bahasa Arab (Memisah &amp; Menyambung Huruf Hijaiyah) serta Menulis Ulang Kalimat (1, 2, 3+ kata).</p>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <button type="button" class="btn btn-sec btn-sm" onclick="App.applyPreset('standard')">Standar (15)</button>
+                <button type="button" class="btn btn-emerald-soft btn-sm" onclick="App.applyPreset('hijaiyah')">Hijaiyah &amp; Tulis Ulang (12)</button>
+                <button type="button" class="btn btn-sec btn-sm" onclick="App.applyPreset('reset')">Nolkan</button>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;">
+              <div>
+                <strong style="font-size:12.5px;color:var(--navy);">Jumlah Opsi Pilihan Ganda</strong>
+                <div style="font-size:11.5px;color:var(--muted);">Atur jumlah opsi jawaban PG: A–C (3 opsi), A–D (4 opsi), atau A–E (5 opsi)</div>
+              </div>
+              <div id="opt-count-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+            </div>
+
+            <div class="types-grid" id="types-grid"></div>
+
+            <!-- Word Count Configuration for Menulis Ulang Kalimat -->
+            <div id="rewrite-word-panel" class="word-config-box">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div>
+                  <strong style="font-size:12.5px;color:#065F46;">Pengaturan Panjang Kalimat — Menulis Ulang (<span id="rewrite-count-badge">0</span> soal)</strong>
+                  <div style="font-size:11.5px;color:#047857;">Pilih jumlah kata per kalimat: 1 kata, 2 kata, 3 kata, dan seterusnya (atau bertahap).</div>
+                </div>
+              </div>
+              <div class="word-pills" id="word-pills"></div>
+            </div>
+
+            <div class="summary-cta">
+              <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                <div>
+                  <div style="font-size:11.5px;color:var(--muted);">Total Keseluruhan Soal</div>
+                  <div class="font-mono" style="font-size:22px;font-weight:800;color:var(--navy);"><span id="total-q">0</span> <span style="font-size:13px;font-weight:500;color:var(--muted);">butir</span></div>
+                </div>
+                <div style="width:1px;height:30px;background:var(--border);"></div>
+                <div>
+                  <div style="font-size:11.5px;color:var(--muted);">Estimasi Skor Total</div>
+                  <div class="font-mono" style="font-size:18px;font-weight:700;"><span id="total-pts">0</span> <span style="font-size:12px;font-weight:400;color:var(--muted);">poin</span></div>
+                </div>
+              </div>
+
+              <button type="button" id="btn-generate" class="btn" onclick="App.generate()">
+                BUAT SOAL LIVE SEKARANG
+              </button>
+            </div>
+
+            <div id="gen-progress-box" class="progress-box hidden">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-weight:600;">
+                <span id="gen-progress-msg">Menghubungi AI Studio...</span>
+                <span class="font-mono" id="gen-progress-pct">0%</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" id="gen-progress-fill"></div></div>
+            </div>
+
+            <div id="gen-error-box" class="err-banner hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: EDITOR & PREVIEW -->
+    <section id="view-editor" class="hidden">
+      <div class="page-head">
+        <div>
+          <h1 id="ed-title" style="font-size:22px;">Editor &amp; Preview Soal</h1>
+          <p id="ed-meta">Kelola soal, ubah mode tampilan siswa/guru, atau edit manual.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button type="button" class="btn btn-sec btn-sm" id="mode-student" onclick="App.setDisplayMode('student')">Mode Siswa</button>
+          <button type="button" class="btn btn-sm" id="mode-teacher" onclick="App.setDisplayMode('teacher')">Mode Guru (+Kunci)</button>
+          <button type="button" class="btn btn-sec btn-sm" id="mode-edit" onclick="App.setDisplayMode('edit')">Mode Edit</button>
+          <button type="button" class="btn btn-emerald btn-sm" onclick="App.setTab('export')">Ekspor &amp; Cetak A4</button>
+        </div>
+      </div>
+      <div id="questions-container"></div>
+    </section>
+
+    <!-- TAB 2B: KISI-KISI KURIKULUM MERDEKA -->
+    <section id="view-kisi" class="hidden">
+      <div class="page-head">
+        <div>
+          <h1 style="font-size:22px;">Kisi-Kisi Penulisan Soal (Kurikulum Merdeka)</h1>
+          <p id="kisi-meta">Pemetaan Fase A–F, Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), Indikator Soal &amp; Level Kognitif.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button type="button" class="btn btn-sec btn-sm" onclick="App.setTab('editor')">Kembali ke Editor</button>
+          <button type="button" class="btn btn-emerald btn-sm" onclick="App.goToExportKisiKisi()">Cetak / Ekspor Kisi-Kisi</button>
+        </div>
+      </div>
+      <div id="kisi-container"></div>
+    </section>
+
+    <!-- TAB 2C: RPP / MODUL AJAR KURIKULUM MERDEKA -->
+    <section id="view-rpp" class="hidden">
+      <div class="page-head no-print">
+        <div>
+          <h1 style="font-size:22px;">Modul Ajar / RPP Kurikulum Merdeka</h1>
+          <p>Susun perangkat ajar lengkap sesuai Kurikulum Merdeka (CP, TP, P5, Kegiatan Pendahuluan-Inti-Penutup, Asesmen, Pengayaan &amp; Refleksi) siap cetak A4 dan Word.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button type="button" class="btn btn-sec btn-sm" onclick="App.syncRppFromGenerator()">Ambil Materi dari Soal</button>
+          <button type="button" class="btn btn-sec btn-sm" onclick="App.generateRpp(true)">Susun Cepat Offline</button>
+          <button type="button" class="btn btn-emerald btn-sm" id="btn-gen-rpp" onclick="App.generateRpp(false)">Buat RPP Otomatis (AI Live)</button>
+        </div>
+      </div>
+      <div id="rpp-container"></div>
+    </section>
+
+    <!-- TAB 3: EXPORT & PRINT -->
+    <section id="view-export" class="hidden">
+      <div class="page-head no-print">
+        <div>
+          <h1 style="font-size:22px;">Studio Cetak A4, Word (.doc) &amp; Kisi-Kisi Kurmer</h1>
+          <p>Tata letak cetak padat &amp; hemat kertas. Pilih paket dokumen, cetak langsung ke PDF, unduh Word, atau salin HTML Blogger.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <select id="export-mode" class="select" style="width:auto;min-height:38px;" onchange="App.renderExport()">
+            <option value="complete">Paket Lengkap (Soal + Kunci + Kisi-Kisi)</option>
+            <option value="questions_only">Soal Saja (Lembar Siswa)</option>
+            <option value="answers_only">Kunci &amp; Pembahasan Saja</option>
+            <option value="kisi_kisi_only">Kisi-Kisi Kurikulum Merdeka</option>
+          </select>
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#FFF;cursor:pointer;">
+            <input type="checkbox" id="chk-compact-print" checked onchange="App.toggleExportPref()" />
+            Hemat Kertas (Padat)
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#FFF;cursor:pointer;">
+            <input type="checkbox" id="chk-include-kisi" checked onchange="App.toggleExportPref()" />
+            Sertakan Kisi-Kisi
+          </label>
+          <button type="button" class="btn btn-sm" onclick="window.print()">Cetak / Simpan PDF</button>
+          <button type="button" class="btn btn-sec btn-sm" onclick="App.downloadWord()">Download Word (.doc)</button>
+          <button type="button" class="btn btn-emerald-soft btn-sm" onclick="App.copyBloggerHtml()">Salin HTML Blogger</button>
+        </div>
+      </div>
+      <div id="export-sheet-wrap"></div>
+    </section>
+
+    <!-- TAB 4: SETTINGS -->
+    <section id="view-settings" class="hidden">
+      <div class="page-head">
+        <div>
+          <h1 style="font-size:22px;">Identitas Kop Naskah &amp; Koneksi Live GAS (AI Studio)</h1>
+          <p>Hubungkan halaman standalone ini dengan Google Apps Script Web App yang memakai Google AI Studio (Gemini API) atau Server AI Studio agar dapat membuat soal secara live.</p>
+        </div>
+      </div>
+      <div class="layout-grid">
+        <div class="card">
+          <h2 class="section-title" style="margin-bottom:14px;">Kop Lembaga &amp; Naskah Ujian</h2>
+          <div class="field"><label class="label">Nama Sekolah / Madrasah</label><input id="kop-inst" class="input" onchange="App.saveSettings()" /></div>
+          <div class="field"><label class="label">Alamat Lembaga</label><input id="kop-addr" class="input" onchange="App.saveSettings()" /></div>
+          <div class="field"><label class="label">Judul Evaluasi / Ujian</label><input id="kop-exam" class="input" onchange="App.saveSettings()" /></div>
+          <div class="row-2 field">
+            <div><label class="label">Nama Guru / Pengampu</label><input id="kop-teacher" class="input" onchange="App.saveSettings()" /></div>
+            <div><label class="label">Kelas / Semester</label><input id="kop-class" class="input" onchange="App.saveSettings()" /></div>
+          </div>
+          <div class="field"><label class="label">Alokasi Waktu</label><input id="kop-time" class="input" onchange="App.saveSettings()" /></div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title" style="margin-bottom:14px;">Koneksi Live Google Apps Script &amp; AI Studio</h2>
+          <div class="field">
+            <label class="label">Pilih Sumber Pembuatan Soal</label>
+            <select id="ai-mode" class="select" onchange="App.saveSettings()">
+              <option value="gas">Google Apps Script Web App (Live Google AI Studio)</option>
+              <option value="server">Server SIT PLUS CORDOVA (/api/ai/generate-stream)</option>
+              <option value="offline">Mesin Lokal Offline (Tanpa API/Server)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label">URL Web App Google Apps Script (Deployment .../exec) atau Endpoint Server</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <input id="ai-endpoint" class="input" style="flex:1;min-width:220px;" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.saveSettings()" />
+              <button type="button" class="btn btn-sec" onclick="App.testConnection()">Simpan &amp; Tes Koneksi</button>
+            </div>
+          </div>
+          <div id="settings-conn-status" style="margin-bottom:12px;font-size:12.5px;color:var(--muted);"></div>
+          <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12px;color:#334155;line-height:1.6;">
+            <strong>Langkah Setup Cepat GAS + AI Studio:</strong>
+            <ol style="margin:6px 0 0;padding-left:18px;">
+              <li>Salin semua file <code>.gs</code> dari menu <strong>Kode GAS &amp; Blogger</strong> ke proyek Google Apps Script Anda.</li>
+              <li>Di Apps Script, buka <em>Project Settings &rarr; Script Properties</em> lalu tambahkan properti <code>GEMINI_API_KEY</code> (API Key dari Google AI Studio).</li>
+              <li>Klik <em>Deploy &rarr; New deployment &rarr; Web app</em> (Execute as: <strong>Me</strong>, Who has access: <strong>Anyone</strong>), lalu tempel URL <code>.../exec</code> di atas.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast-wrap no-print" id="toast-wrap"></div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'sit_cordova_standalone_v1';
+  var DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwmkqPA5cfAmvhGJ2k8fXQOwypyYznXr5aXhIYIoMXtgX3khJgrPo1c_Zsb6N02tuSpYQ/exec';
+
+  var QUESTION_TYPES = [
+    { id: 'pilihan_ganda', name: 'Pilihan Ganda', desc: 'Satu jawaban benar dengan 3–5 opsi pilihan (A–C, A–D, atau A–E).', weight: 2 },
+    { id: 'pilihan_ganda_kompleks', name: 'Pilihan Ganda Kompleks', desc: 'Lebih dari satu pernyataan atau jawaban benar.', weight: 3 },
+    { id: 'benar_salah', name: 'Benar atau Salah', desc: 'Verifikasi ketepatan pernyataan konseptual.', weight: 1 },
+    { id: 'esai', name: 'Esai / Uraian', desc: 'Jawaban terbuka lengkap dengan rubrik skor.', weight: 10 },
+    { id: 'isian_singkat', name: 'Isian Singkat', desc: 'Menuliskan istilah atau kata kunci ringkas.', weight: 2 },
+    { id: 'menjodohkan', name: 'Menjodohkan', desc: 'Memasangkan kata/konsep yang berkorespondensi.', weight: 4 },
+    { id: 'melengkapi_kalimat', name: 'Melengkapi Kalimat', desc: 'Mengisi bagian rumpang pada kalimat atau kaidah.', weight: 2 },
+    { id: 'mengurutkan', name: 'Mengurutkan', desc: 'Menyusun urutan kata, kalimat, atau prosedur.', weight: 4 },
+    { id: 'studi_kasus', name: 'Studi Kasus', desc: 'Skenario nyata yang menuntut pemecahan masalah.', weight: 10 },
+    { id: 'analisis_teks', name: 'Analisis Teks', desc: 'Bedah bacaan/teks Arab berharakat & terjemahan.', weight: 6 },
+    { id: 'hots', name: 'Soal HOTS', desc: 'Penalaran tingkat tinggi (C4–C6).', weight: 5 },
+    { id: 'berbasis_gambar', name: 'Berbasis Gambar / Diagram', desc: 'Stimulus ilustrasi/diagram edukatif.', weight: 4 },
+    { id: 'berbasis_bacaan', name: 'Berbasis Bacaan / Wacana', desc: 'Pemahaman wacana dan inferensi teks.', weight: 4 },
+    { id: 'memisah_hijaiyah', name: 'Memisah Huruf Hijaiyah', desc: 'Bahasa Arab: mengurai kata Arab menjadi huruf hijaiyah terpisah beserta harakat.', weight: 3, arabicSpecial: true },
+    { id: 'menyambung_hijaiyah', name: 'Menyambung Huruf Hijaiyah', desc: 'Bahasa Arab: merangkai huruf hijaiyah terpisah menjadi kata utuh.', weight: 3, arabicSpecial: true },
+    { id: 'menulis_ulang_kalimat', name: 'Menulis Ulang Kalimat', desc: 'Menyalin & menulis ulang kalimat bertahap (1 kata, 2 kata, 3 kata, dst.).', weight: 3, arabicSpecial: true },
+    { id: 'menebalkan_mewarnai_arab', name: 'Menebalkan & Mewarnai Arab (A4 · 2 Soal)', desc: 'Bahasa Arab: menebalkan garis (tracing) & mewarnai kata/kalimat Arab ukuran besar (A4 maksimal 2 soal/halaman).', weight: 4, arabicSpecial: true }
+  ];
+
+  // Curated Arabic Hijaiyah & Vocabulary Bank with full Harakat
+  var ARABIC_WORD_BANK = [
+    { ar: 'مَدْرَسَةٌ', id: 'Sekolah', topic: 'Lingkungan Sekolah' },
+    { ar: 'كِتَابٌ', id: 'Buku', topic: 'Peralatan Belajar' },
+    { ar: 'قَلَمٌ', id: 'Pena', topic: 'Peralatan Belajar' },
+    { ar: 'مَسْجِدٌ', id: 'Masjid', topic: 'Ibadah & Lingkungan' },
+    { ar: 'طَالِبٌ', id: 'Siswa / Pelajar', topic: 'Sekolah' },
+    { ar: 'مُعَلِّمٌ', id: 'Guru', topic: 'Sekolah' },
+    { ar: 'بَيْتٌ', id: 'Rumah', topic: 'Keluarga' },
+    { ar: 'فَصْلٌ', id: 'Ruang Kelas', topic: 'Sekolah' },
+    { ar: 'سَبُّورَةٌ', id: 'Papan Tulis', topic: 'Peralatan Belajar' },
+    { ar: 'مَكْتَبٌ', id: 'Meja', topic: 'Peralatan Belajar' },
+    { ar: 'كُرْسِيٌّ', id: 'Kursi', topic: 'Peralatan Belajar' },
+    { ar: 'حَقِيبَةٌ', id: 'Tas Sekolah', topic: 'Peralatan Belajar' }
+  ];
+
+  var ARABIC_SENTENCES_BY_WORDS = {
+    1: [
+      { ar: 'مَدْرَسَةٌ', id: 'Sekolah' },
+      { ar: 'كِتَابٌ', id: 'Buku' },
+      { ar: 'مُجْتَهِدٌ', id: 'Rajin' },
+      { ar: 'مَسْجِدٌ', id: 'Masjid' },
+      { ar: 'قَلَمٌ', id: 'Pena' },
+      { ar: 'عِلْمٌ', id: 'Ilmu' }
+    ],
+    2: [
+      { ar: 'هٰذَا كِتَابٌ', id: 'Ini sebuah buku' },
+      { ar: 'طَالِبٌ مُجْتَهِدٌ', id: 'Siswa yang rajin' },
+      { ar: 'مَدْرَسَةٌ جَمِيلَةٌ', id: 'Sekolah yang indah' },
+      { ar: 'الْعِلْمُ نُورٌ', id: 'Ilmu adalah cahaya' },
+      { ar: 'فَصْلٌ نَظِيفٌ', id: 'Kelas yang bersih' }
+    ],
+    3: [
+      { ar: 'يَقْرَأُ الطَّالِبُ الْكِتَابَ', id: 'Siswa membaca buku' },
+      { ar: 'يَكْتُبُ أَحْمَدُ الدَّرْسَ', id: 'Ahmad menulis pelajaran' },
+      { ar: 'الْمُسْلِمُ يُحِبُّ النَّظَافَةَ', id: 'Muslim mencintai kebersihan' },
+      { ar: 'فِي الْفَصْلِ سَبُّورَةٌ', id: 'Di dalam kelas ada papan tulis' },
+      { ar: 'نَتَعَلَّمُ اللُّغَةَ الْعَرَبِيَّةَ', id: 'Kami belajar bahasa Arab' }
+    ],
+    4: [
+      { ar: 'يَذْهَبُ أَحْمَدُ إِلَى الْمَدْرَسَةِ', id: 'Ahmad pergi ke sekolah' },
+      { ar: 'يَقْرَأُ التِّلْمِيذُ الْقُرْآنَ الْكَرِيمَ', id: 'Murid membaca Al-Quran yang mulia' },
+      { ar: 'تَجْلِسُ فَاطِمَةُ عَلَى الْكُرْسِيِّ', id: 'Fatimah duduk di atas kursi' },
+      { ar: 'نَحْنُ نَتَعَلَّمُ فِي الْفَصْلِ', id: 'Kami belajar di dalam kelas' }
+    ],
+    5: [
+      { ar: 'يَذْهَبُ الطَّالِبُ إِلَى الْمَدْرَسَةِ صَبَاحًا', id: 'Siswa pergi ke sekolah pada pagi hari' },
+      { ar: 'يَكْتُبُ التِّلْمِيذُ الدَّرْسَ بِالْقَلَمِ الْجَدِيدِ', id: 'Murid menulis pelajaran dengan pena baru' },
+      { ar: 'يَجْتَهِدُ الْمُؤْمِنُ فِي طَلَبِ الْعِلْمِ', id: 'Orang beriman bersungguh-sungguh menuntut ilmu' }
+    ]
+  };
+
+  var LATIN_SENTENCES_BY_WORDS = {
+    1: ['Membaca', 'Belajar', 'Sekolah', 'Ekosistem', 'Menulis', 'Disiplin'],
+    2: ['Membaca buku', 'Siswa rajin', 'Lingkungan bersih', 'Belajar tekun', 'Karya tulis'],
+    3: ['Ibu membaca buku', 'Adik menulis huruf', 'Siswa belajar bersama', 'Kami menjaga kebersihan'],
+    4: ['Siswa membaca buku perpustakaan', 'Kami belajar menulis dengan rapi', 'Guru menjelaskan materi pelajaran baru'],
+    5: ['Para siswa rajin membaca buku pelajaran', 'Kita harus menjaga kebersihan lingkungan sekolah']
+  };
+
+  var NON_CONNECTING = ['ا', 'أ', 'إ', 'آ', 'د', 'ذ', 'ر', 'ز', 'و', 'ؤ', 'ة', 'ى'];
+  var ARABIC_DIACRITIC = /[\u064B-\u065F\u0670\u06D6-\u06ED]/;
+  var ARABIC_LETTER = /[\u0621-\u064A\u0671-\u06D3]/;
+
+  function splitArabicToHijaiyah(word) {
+    var clusters = [];
+    var chars = Array.from(String(word || '').trim());
+    for (var i = 0; i < chars.length; i++) {
+      var ch = chars[i];
+      if (/\s/.test(ch)) continue;
+      if (ARABIC_DIACRITIC.test(ch) && clusters.length > 0) {
+        clusters[clusters.length - 1] += ch;
+      } else if (ARABIC_LETTER.test(ch)) {
+        clusters.push(ch);
+      }
+    }
+    return clusters;
+  }
+
+  function cleanAsterisks(input) {
+    if (input === null || input === undefined) return '';
+    var text = String(input);
+    text = text.replace(/(\d\s*)\*(\s*\d)/g, '$1__MATH_MUL__$2');
+    text = text.replace(/^\s*\*\s+/gm, '• ');
+    text = text.replace(/\*/g, '');
+    text = text.replace(/^\s*#{1,6}\s+/gm, '');
+    text = text.replace(/`/g, '');
+    text = text.replace(/__MATH_MUL__/g, '×');
+    return text.replace(/[ \t]+\n/g, '\n').trim();
+  }
+
+  function hasArabic(str) {
+    return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(str || ''));
+  }
+
+  function hasLatin(str) {
+    return /[A-Za-z\u00C0-\u024F]/.test(String(str || ''));
+  }
+
+  function isPureArabic(str) {
+    var s = cleanAsterisks(str);
+    if (!s) return false;
+    return hasArabic(s) && !hasLatin(s);
+  }
+
+  function getDir(str) {
+    return isPureArabic(str) ? 'rtl' : 'ltr';
+  }
+
+  function stripHarakat(str) {
+    return String(str || '').replace(/[\u064B-\u065F\u0670]/g, '');
+  }
+
+  function formatArabicText(str, harakatMode) {
+    if (harakatMode === 'Tanpa Harakat (Gundul)') return stripHarakat(str);
+    return str;
+  }
+
+  function buildSentenceOfWordCount(targetCount, isArabic, index, customSentences) {
+    if (customSentences && customSentences.length > 0) {
+      var candidate = customSentences[index % customSentences.length].trim();
+      var tokens = candidate.split(/\s+/).filter(Boolean);
+      if (tokens.length >= targetCount) {
+        return { text: tokens.slice(0, targetCount).join(' '), trans: '' };
+      }
+      // Repeat/pad naturally if custom sentence is shorter than targetCount
+      var padded = tokens.slice();
+      var pool = isArabic ? ['الْيَوْمَ', 'جَمِيلٌ', 'جِدًّا', 'فِي', 'الْمَدْرَسَةِ'] : ['dengan', 'sangat', 'rapi', 'di', 'sekolah'];
+      var pIdx = 0;
+      while (padded.length < targetCount) {
+        padded.push(pool[pIdx % pool.length]);
+        pIdx++;
+      }
+      return { text: padded.join(' '), trans: '' };
+    }
+
+    if (isArabic) {
+      if (targetCount <= 5 && ARABIC_SENTENCES_BY_WORDS[targetCount]) {
+        var list = ARABIC_SENTENCES_BY_WORDS[targetCount];
+        var pick = list[index % list.length];
+        return { text: pick.ar, trans: pick.id };
+      }
+      // Build 6+ words cleanly
+      var base = ARABIC_SENTENCES_BY_WORDS[5][index % ARABIC_SENTENCES_BY_WORDS[5].length];
+      var extraAr = ['كُلَّ', 'يَوْمٍ', 'بِجِدٍّ', 'وَنَشَاطٍ', 'دَائِمًا', 'مَعَ', 'الْأَصْدِقَاءِ', 'فِي', 'الْفَصْلِ', 'الْجَمِيلِ'];
+      var words = base.ar.split(/\s+/);
+      var k = 0;
+      while (words.length < targetCount) {
+        words.push(extraAr[k % extraAr.length]);
+        k++;
+      }
+      return { text: words.slice(0, targetCount).join(' '), trans: base.id };
+    } else {
+      if (targetCount <= 5 && LATIN_SENTENCES_BY_WORDS[targetCount]) {
+        var lList = LATIN_SENTENCES_BY_WORDS[targetCount];
+        return { text: lList[index % lList.length], trans: '' };
+      }
+      var lBase = LATIN_SENTENCES_BY_WORDS[5][index % LATIN_SENTENCES_BY_WORDS[5].length].split(/\s+/);
+      var extraLat = ['setiap', 'pagi', 'dengan', 'penuh', 'semangat', 'bersama', 'teman', 'di', 'kelas'];
+      var lk = 0;
+      while (lBase.length < targetCount) {
+        lBase.push(extraLat[lk % extraLat.length]);
+        lk++;
+      }
+      return { text: lBase.slice(0, targetCount).join(' '), trans: '' };
+    }
+  }
+
+  function getFaseKurikulumMerdeka(level, gradeClass) {
+    var lvl = String(level || '').toUpperCase();
+    var gr = String(gradeClass || '').toUpperCase();
+    if (lvl.indexOf('SD') !== -1 || lvl.indexOf('MI') !== -1) {
+      if (/\b(1|2|I|II)\b/.test(gr)) return 'Fase A (Kelas 1–2)';
+      if (/\b(3|4|III|IV)\b/.test(gr)) return 'Fase B (Kelas 3–4)';
+      return 'Fase C (Kelas 5–6)';
+    }
+    if (lvl.indexOf('SMP') !== -1 || lvl.indexOf('MTS') !== -1) return 'Fase D (Kelas 7–9)';
+    if (lvl.indexOf('SMA') !== -1 || lvl.indexOf('SMK') !== -1 || lvl.indexOf('MA') !== -1) {
+      if (/\b(10|X)\b/.test(gr)) return 'Fase E (Kelas 10)';
+      return 'Fase F (Kelas 11–12)';
+    }
+    return 'Fase Umum';
+  }
+
+  function buildKisiKisiRow(q) {
+    var meta = QUESTION_TYPES.find(function (t) { return t.id === q.type; });
+    var bentuk = (meta && meta.name) || q.type;
+    var materi = q.topicTag || state.title || state.subject || '-';
+    var cog = q.cognitiveLevel || 'C2';
+    var tier = q.thinkingTier || (cog === 'C1' || cog === 'C2' ? 'LOTS' : cog === 'C3' ? 'MOTS' : 'HOTS');
+    var cp = q.capaianPembelajaran ||
+      ('Peserta didik menguasai capaian pembelajaran ' + (state.subject || '') + ' pada ' + getFaseKurikulumMerdeka(state.level, state.settings.gradeClass) + ' terkait materi ' + (state.title || '') + '.');
+    var tp = q.tujuanPembelajaran ||
+      ('Peserta didik mampu memahami dan menerapkan konsep ' + materi + ' pada mata pelajaran ' + (state.subject || '') + '.');
+    var ind = q.indikatorSoal ||
+      ('Disajikan stimulus/pernyataan tentang ' + materi + ', peserta didik dapat menyelesaikan soal ' + bentuk + ' dengan tepat.');
+    return {
+      number: q.number,
+      cp: cp,
+      tp: tp,
+      materi: materi,
+      indikator: ind,
+      cognitiveLevel: cog,
+      thinkingTier: tier,
+      bentukSoal: bentuk,
+      weight: q.weight || 2
+    };
+  }
+
+  var GRADE_BY_LEVEL = {
+    SD: ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'],
+    SMP: ['Kelas 7', 'Kelas 8', 'Kelas 9'],
+    'SMA/SMK': ['Kelas 10', 'Kelas 11', 'Kelas 12'],
+    MA: ['Kelas 10', 'Kelas 11', 'Kelas 12'],
+    'Perguruan Tinggi': ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Semester 7', 'Semester 8'],
+    Umum: ['Tingkat Dasar', 'Tingkat Menengah', 'Tingkat Lanjutan']
+  };
+  var DEFAULT_GRADE = {
+    SD: 'Kelas 3',
+    SMP: 'Kelas 8',
+    'SMA/SMK': 'Kelas 10',
+    MA: 'Kelas 10',
+    'Perguruan Tinggi': 'Semester 3',
+    Umum: 'Tingkat Menengah'
+  };
+
+  function getSuggestedOptCount(lvl, gr) {
+    var g = String(gr || '').toUpperCase();
+    if (lvl === 'SD') return /\b(1|2|3|I|II|III)\b/.test(g) ? 3 : 4;
+    if (lvl === 'SMP') return 4;
+    if (lvl === 'SMA/SMK' || lvl === 'MA' || lvl === 'Perguruan Tinggi') return 5;
+    return 4;
+  }
+
+  function getOptRangeText(cnt) {
+    var n = Number(cnt);
+    if (n === 3) return 'A–C';
+    if (n === 4) return 'A–D';
+    return 'A–E';
+  }
+
+  function defaultState() {
+    return {
+      tab: 'generator',
+      displayMode: 'teacher',
+      compactPrint: true,
+      includeKisiKisi: true,
+      title: 'الأَدَوَاتُ الْمَدْرَسِيَّةُ (Huruf Hijaiyah & Kitabah Bahasa Arab)',
+      subtitles: [
+        'Memisahkan Kata Bahasa Arab menjadi Huruf Hijaiyah Tunggal',
+        'Menyambungkan Huruf Hijaiyah Terpisah',
+        'Menulis Ulang Kalimat Bertahap (1 Kata, 2 Kata, 3+ Kata)'
+      ],
+      level: 'SD',
+      gradeClass: 'Kelas 3',
+      language: 'Bilingual (Arab-Indonesia)',
+      subject: 'Bahasa Arab',
+      optionCount: 3,
+      harakatMode: 'Penuh (Syakal Lengkap)',
+      customWordsText: '',
+      difficulty: 'Campuran',
+      thinkingTier: 'Campuran',
+      cognitiveLevels: ['C1', 'C2', 'C3'],
+      shuffleQuestions: false,
+      shuffleOptions: true,
+      rewriteWordMode: 'progressive',
+      rewriteWordCount: 3,
+      counts: {
+        pilihan_ganda: 0,
+        pilihan_ganda_kompleks: 0,
+        benar_salah: 0,
+        esai: 0,
+        isian_singkat: 0,
+        menjodohkan: 0,
+        melengkapi_kalimat: 0,
+        mengurutkan: 0,
+        studi_kasus: 0,
+        analisis_teks: 0,
+        hots: 0,
+        berbasis_gambar: 0,
+        berbasis_bacaan: 0,
+        memisah_hijaiyah: 4,
+        menyambung_hijaiyah: 4,
+        menulis_ulang_kalimat: 4,
+        menebalkan_mewarnai_arab: 0
+      },
+      settings: {
+        institutionName: 'SEKOLAH ISLAM TERPADU PLUS CORDOVA (SD–SMA)',
+        institutionAddress: 'Sekolah Islam Terpadu Plus Cordova · Jenjang SD–SMA',
+        examTitle: 'LEMBAR KERJA & EVALUASI PEMBELAJARAN',
+        teacherName: 'Ustdz Mulyadi, S.T.',
+        gradeClass: 'Kelas III / Semester Ganjil',
+        timeAllocation: '60 Menit',
+        aiMode: 'gas',
+        aiEndpoint: DEFAULT_GAS_URL
+      },
+      rpp: null,
+      rppViewMode: 'preview',
+      questions: []
+    };
+  }
+
+  function getDefaultRpp() {
+    var activeGrade = state.gradeClass || (state.settings && state.settings.gradeClass) || 'Kelas 3';
+    var fase = getFaseKurikulumMerdeka(state.level, activeGrade);
+    var topic = cleanAsterisks(state.title || 'Materi Pembelajaran');
+    var subs = (state.subtitles && state.subtitles.length > 0 ? state.subtitles : [topic]).map(cleanAsterisks);
+    return {
+      institutionName: (state.settings && state.settings.institutionName) || 'SEKOLAH ISLAM TERPADU PLUS CORDOVA (SD–SMA)',
+      institutionAddress: (state.settings && state.settings.institutionAddress) || 'Sekolah Islam Terpadu Plus Cordova · Jenjang SD–SMA',
+      teacherName: (state.settings && state.settings.teacherName) || 'Ustdz Mulyadi, S.T.',
+      teacherNip: '-',
+      principalName: 'Kepala Sekolah SIT PLUS CORDOVA',
+      principalNip: '-',
+      subject: state.subject || 'Bahasa Arab',
+      level: state.level || 'SD',
+      gradeClass: activeGrade,
+      fase: fase,
+      semester: 'Ganjil (I)',
+      academicYear: '2025/2026',
+      topic: topic,
+      subtopics: subs,
+      alokasiWaktu: '2 x 35 Menit (1 Pertemuan)',
+      jumlahPertemuan: '1 Pertemuan',
+      modelPembelajaran: 'Discovery Learning / Problem Based Learning (Pembelajaran Aktif & Kontekstual)',
+      targetPesertaDidik: 'Peserta didik reguler ' + activeGrade + ' (umum & beragam gaya belajar)',
+      kompetensiAwal: 'Peserta didik telah mengenal konsep dasar terkait ' + topic + ' pada mata pelajaran ' + (state.subject || 'Bahasa Arab') + '.',
+      profilPelajarPancasila: [
+        'Beriman, Bertakwa kepada Tuhan YME, dan Berakhlak Mulia',
+        'Bernalar Kritis',
+        'Mandiri',
+        'Bergotong Royong'
+      ],
+      saranaPrasarana: 'Papan tulis, spidol/LCD proyektor, LKPD cetak SIT PLUS CORDOVA, kamus/buku ajar, dan kartu kata/media visual.',
+      capaianPembelajaran: 'Pada akhir ' + fase + ', peserta didik mampu memahami, menganalisis, dan menerapkan konsep serta keterampilan pada materi ' + topic + ' dalam konteks pembelajaran ' + (state.subject || '') + ' secara mandiri dan bermakna.',
+      tujuanPembelajaran: [
+        'Peserta didik mampu menjelaskan konsep pokok dan kosakata/istilah inti pada materi ' + topic + '.',
+        'Peserta didik mampu mengidentifikasi dan mempraktikkan penerapan materi ' + (subs[0] || topic) + ' dengan tepat.',
+        'Peserta didik mampu menyelesaikan soal latihan dan refleksi pemahaman secara mandiri maupun berkelompok.'
+      ],
+      pemahamanBermakna: 'Menguasai materi ' + topic + ' membantu peserta didik membangun pemahaman terstruktur dan menerapkannya dalam kehidupan sehari-hari dengan nilai islami.',
+      pertanyaanPemantik: [
+        'Apa yang kalian ketahui tentang ' + topic + ' dalam kehidupan sehari-hari?',
+        'Mengapa kita perlu memahami ' + (subs[0] || topic) + ' dengan baik dan benar?'
+      ],
+      kegiatanPembelajaran: {
+        pendahuluan: {
+          durasi: '10 Menit',
+          langkah: [
+            'Guru membuka pelajaran dengan salam, doa bersama, dan mengecek kehadiran serta kesiapan belajar peserta didik.',
+            'Apersepsi: mengaitkan pengalaman peserta didik dengan topik ' + topic + '.',
+            'Guru menyampaikan tujuan pembelajaran, garis besar kegiatan, dan manfaat mempelajari materi hari ini.'
+          ]
+        },
+        inti: {
+          durasi: '50 Menit',
+          langkah: [
+            'Stimulasi & Eksplorasi: Peserta didik mengamati stimulus materi atau teks/kosakata terkait ' + topic + '.',
+            'Identifikasi & Diskusi: Secara berpasangan atau kelompok kecil, peserta didik membahas pokok bahasan ' + subs.join(', ') + '.',
+            'Aplikasi & Latihan Terbimbing: Peserta didik mengerjakan lembar kerja/soal latihan bertahap dari pemahaman dasar hingga penerapan.',
+            'Konfirmasi & Penguatan: Beberapa peserta didik mempresentasikan hasil kerjanya dan guru memberikan umpan balik konstruktif.'
+          ]
+        },
+        penutup: {
+          durasi: '10 Menit',
+          langkah: [
+            'Guru bersama peserta didik menyimpulkan poin-poin penting pembelajaran hari ini.',
+            'Peserta didik melakukan refleksi singkat mengenai hal yang telah dipahami dan kesulitan yang masih dialami.',
+            'Guru memberikan tindak lanjut/penugasan ringan dan menutup kelas dengan doa penutup majelis serta salam.'
+          ]
+        }
+      },
+      asesmen: {
+        diagnostik: 'Tanya jawab lisan di awal pertemuan untuk memetakan kesiapan belajar peserta didik terkait ' + topic + '.',
+        formatif: 'Observasi keaktifan diskusi kelompok dan penilaian proses pengerjaan LKPD/latihan soal.',
+        sumatif: 'Tes tertulis/evaluasi akhir materi menggunakan instrumen soal dan rubrik penilaian SIT PLUS CORDOVA.'
+      },
+      pengayaanRemedial: {
+        pengayaan: 'Peserta didik yang telah mencapai ketuntasan diberikan tugas eksplorasi soal HOTS atau penyusunan ringkasan kreatif terkait ' + topic + '.',
+        remedial: 'Peserta didik yang memerlukan bimbingan tambahan mengikuti pendampingan ulang konsep inti dan latihan soal terstruktur.'
+      },
+      refleksi: {
+        pendidik: 'Apakah seluruh peserta didik terlibat aktif? Bagian materi mana yang perlu diperkuat pada pertemuan berikutnya?',
+        pesertaDidik: 'Apa hal baru yang saya pelajari hari ini? Materi bagian mana yang sudah saya kuasai dan masih perlu latihan?'
+      },
+      glosarium: [
+        { term: topic, definition: 'Tema atau pokok bahasan utama yang dipelajari pada modul ajar ini.' },
+        { term: 'Capaian Pembelajaran (CP)', definition: 'Kompetensi pembelajaran minimum yang harus dicapai peserta didik pada setiap fase Kurikulum Merdeka.' },
+        { term: 'Tujuan Pembelajaran (TP)', definition: 'Penjabaran operasional kompetensi dari CP untuk dicapai dalam kegiatan pembelajaran.' }
+      ],
+      daftarPustaka: 'Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. Panduan Pembelajaran dan Asesmen Kurikulum Merdeka. Jakarta: Kemendikbudristek. Modul Ajar Internal SIT PLUS CORDOVA.'
+    };
+  }
+
+  function loadState() {
+    var def = defaultState();
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        def = Object.assign(def, parsed);
+        def.settings = Object.assign(defaultState().settings, (parsed && parsed.settings) || {});
+        if (!def.settings.aiEndpoint || def.settings.aiEndpoint.indexOf('PASTE_YOUR') !== -1) {
+          def.settings.aiMode = 'gas';
+          def.settings.aiEndpoint = DEFAULT_GAS_URL;
+        }
+      }
+      if (typeof window !== 'undefined' && window.location && window.location.search) {
+        var params = new URLSearchParams(window.location.search);
+        var gasParam = params.get('gasUrl');
+        if (gasParam) {
+          def.settings.aiMode = 'gas';
+          def.settings.aiEndpoint = gasParam.trim();
+        }
+      }
+    } catch (e) {}
+    return def;
+  }
+
+  var state = loadState();
+  if (!state.rpp) state.rpp = getDefaultRpp();
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function esc(str) {
+    return cleanAsterisks(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function toast(title, msg) {
+    var wrap = document.getElementById('toast-wrap');
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = '<strong>' + esc(title) + '</strong>' + (msg ? '<div style="font-size:12px;color:#475569;margin-top:2px;">' + esc(msg) + '</div>' : '');
+    wrap.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 4200);
+  }
+
+  function updateConnectionUi(statusText, level, descText) {
+    var badge = document.getElementById('live-conn-badge');
+    var desc = document.getElementById('live-conn-desc');
+    var quickMode = document.getElementById('quick-ai-mode');
+    var quickUrl = document.getElementById('quick-gas-url');
+    var settingsStatus = document.getElementById('settings-conn-status');
+
+    if (quickMode) quickMode.value = state.settings.aiMode || 'gas';
+    if (quickUrl) {
+      quickUrl.value = state.settings.aiMode === 'gas' ? (state.settings.aiEndpoint || '') : '';
+      quickUrl.classList.toggle('hidden', state.settings.aiMode !== 'gas');
+    }
+
+    if (badge) {
+      badge.className = 'conn-pill' + (level === 'warn' ? ' warn' : level === 'err' ? ' err' : '');
+      badge.textContent = statusText;
+    }
+    if (desc && descText) desc.textContent = descText;
+    if (settingsStatus && descText) settingsStatus.textContent = statusText + ' — ' + descText;
+  }
+
+  function renderGradeSelectOptions() {
+    var sel = document.getElementById('inp-grade');
+    var customInp = document.getElementById('inp-grade-custom');
+    if (!sel) return;
+    var list = GRADE_BY_LEVEL[state.level] || GRADE_BY_LEVEL.Umum;
+    var cur = state.gradeClass || list[0] || '';
+    var inList = list.indexOf(cur) !== -1;
+    var html = list.map(function (g) {
+      return '<option value="' + esc(g) + '"' + (cur === g ? ' selected' : '') + '>' + esc(g) + '</option>';
+    }).join('');
+    if (!inList && cur) {
+      html += '<option value="__custom__" selected>' + esc(cur) + '</option>';
+    }
+    sel.innerHTML = html;
+    if (customInp) customInp.value = cur;
+  }
+
+  function renderOptionCountPills() {
+    var wrap = document.getElementById('opt-count-pills');
+    var lblShuffle = document.getElementById('lbl-shuffle-opt');
+    var cur = Number(state.optionCount || 4);
+    if (wrap) {
+      wrap.innerHTML = [
+        { c: 3, t: '3 Opsi (A–C / أ–ج)' },
+        { c: 4, t: '4 Opsi (A–D / أ–د)' },
+        { c: 5, t: '5 Opsi (A–E / أ–هـ)' }
+      ].map(function (item) {
+        var act = cur === item.c;
+        return '<button type="button" class="pill-btn ' + (act ? 'active' : '') + '" onclick="App.setOptionCount(' + item.c + ')">' + item.t + '</button>';
+      }).join('');
+    }
+    if (lblShuffle) {
+      var arRange = cur === 3 ? 'أ–ج' : cur === 4 ? 'أ–د' : 'أ–هـ';
+      lblShuffle.textContent = 'Acak Pilihan Jawaban (' + getOptRangeText(cur) + ' / ' + arRange + ')';
+    }
+  }
+
+  function syncInputsFromState() {
+    document.getElementById('inp-title').value = state.title;
+    document.getElementById('inp-level').value = state.level;
+    renderGradeSelectOptions();
+    renderOptionCountPills();
+    document.getElementById('inp-lang').value = state.language;
+    document.getElementById('inp-subject').value = state.subject;
+    document.getElementById('inp-harakat').value = state.harakatMode;
+    document.getElementById('inp-custom-words').value = state.customWordsText || '';
+    document.getElementById('inp-diff').value = state.difficulty;
+    document.getElementById('inp-tier').value = state.thinkingTier;
+    document.getElementById('chk-shuffle-q').checked = Boolean(state.shuffleQuestions);
+    document.getElementById('chk-shuffle-opt').checked = Boolean(state.shuffleOptions);
+
+    document.getElementById('kop-inst').value = state.settings.institutionName;
+    document.getElementById('kop-addr').value = state.settings.institutionAddress;
+    document.getElementById('kop-exam').value = state.settings.examTitle;
+    document.getElementById('kop-teacher').value = state.settings.teacherName;
+    document.getElementById('kop-class').value = state.gradeClass || state.settings.gradeClass;
+    document.getElementById('kop-time').value = state.settings.timeAllocation;
+    document.getElementById('ai-mode').value = state.settings.aiMode || 'gas';
+    document.getElementById('ai-endpoint').value = state.settings.aiEndpoint || '';
+    var chkCompact = document.getElementById('chk-compact-print');
+    var chkKisi = document.getElementById('chk-include-kisi');
+    if (chkCompact) chkCompact.checked = state.compactPrint !== false;
+    if (chkKisi) chkKisi.checked = state.includeKisiKisi !== false;
+
+    if (state.settings.aiMode === 'gas') {
+      if (state.settings.aiEndpoint) {
+        updateConnectionUi('GAS Terhubung Default', 'ok', 'URL Web App GAS siap digunakan untuk menyusun soal live via AI Studio.');
+      } else {
+        updateConnectionUi('URL GAS Belum Diisi', 'warn', 'Tempel URL Web App GAS (.../exec) Anda untuk membuat soal live via AI Studio');
+      }
+    } else if (state.settings.aiMode === 'server') {
+      updateConnectionUi('Server AI Studio Aktif', 'ok', 'Menggunakan Google AI Studio Gemini API melalui Server (/api/ai/generate-stream)');
+    } else {
+      updateConnectionUi('Mode Offline Lokal', 'warn', 'Menggunakan generator aturan lokal tanpa memanggil API AI Studio');
+    }
+  }
+
+  function readInputsToState() {
+    state.title = document.getElementById('inp-title').value;
+    state.level = document.getElementById('inp-level').value;
+    var grCustom = document.getElementById('inp-grade-custom');
+    var grSel = document.getElementById('inp-grade');
+    state.gradeClass = (grCustom && grCustom.value.trim()) || (grSel && grSel.value !== '__custom__' ? grSel.value : state.gradeClass) || DEFAULT_GRADE[state.level] || '';
+    state.settings.gradeClass = state.gradeClass;
+    state.language = document.getElementById('inp-lang').value;
+    state.subject = document.getElementById('inp-subject').value;
+    state.harakatMode = document.getElementById('inp-harakat').value;
+    state.customWordsText = document.getElementById('inp-custom-words').value;
+    state.difficulty = document.getElementById('inp-diff').value;
+    state.thinkingTier = document.getElementById('inp-tier').value;
+    state.shuffleQuestions = document.getElementById('chk-shuffle-q').checked;
+    state.shuffleOptions = document.getElementById('chk-shuffle-opt').checked;
+    saveState();
+  }
+
+  function renderSubtitles() {
+    var wrap = document.getElementById('subtitles-list');
+    wrap.innerHTML = state.subtitles.map(function (s, idx) {
+      return '<div class="sub-item">' +
+        '<span dir="ltr" style="text-align:left;" class="' + (hasArabic(s) ? 'font-arabic' : '') + '">' + (idx + 1) + '. ' + esc(s) + '</span>' +
+        '<button type="button" class="btn btn-danger btn-sm" style="min-height:28px;padding:2px 8px;" onclick="App.removeSubtitle(' + idx + ')">Hapus</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderBloom() {
+    var grid = document.getElementById('bloom-grid');
+    var codes = [
+      { c: 'C1', l: 'C1 Mengingat' },
+      { c: 'C2', l: 'C2 Memahami' },
+      { c: 'C3', l: 'C3 Menerapkan' },
+      { c: 'C4', l: 'C4 Menganalisis' },
+      { c: 'C5', l: 'C5 Mengevaluasi' },
+      { c: 'C6', l: 'C6 Mencipta' }
+    ];
+    grid.innerHTML = codes.map(function (item) {
+      var active = state.cognitiveLevels.indexOf(item.c) !== -1;
+      return '<button type="button" class="bloom-btn ' + (active ? 'active' : '') + '" onclick="App.toggleBloom(\'' + item.c + '\')">' + item.l + '</button>';
+    }).join('');
+  }
+
+  function renderTypesGrid() {
+    var grid = document.getElementById('types-grid');
+    var totalQ = 0;
+    var totalPts = 0;
+
+    grid.innerHTML = QUESTION_TYPES.map(function (t) {
+      var val = Number(state.counts[t.id] || 0);
+      totalQ += val;
+      totalPts += val * t.weight;
+      var cls = 'type-box' + (val > 0 ? ' active' : '') + (t.arabicSpecial ? ' arabic-special' : '');
+      var displayName = t.id === 'pilihan_ganda'
+        ? 'Pilihan Ganda (' + getOptRangeText(state.optionCount || 4) + ')'
+        : t.name;
+      return '<div class="' + cls + '">' +
+        '<div class="type-info">' +
+          '<div class="type-name">' + esc(displayName) + '</div>' +
+          '<div class="type-desc">' + esc(t.desc) + '</div>' +
+        '</div>' +
+        '<div class="stepper">' +
+          '<button type="button" class="step-btn" onclick="App.setCount(\'' + t.id + '\',' + (val - 1) + ')">−</button>' +
+          '<input type="number" min="0" max="50" class="step-val" value="' + val + '" onchange="App.setCount(\'' + t.id + '\', this.value)" />' +
+          '<button type="button" class="step-btn" onclick="App.setCount(\'' + t.id + '\',' + (val + 1) + ')">+</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    document.getElementById('total-q').textContent = totalQ;
+    document.getElementById('total-pts').textContent = totalPts;
+    document.getElementById('nav-q-count').textContent = state.questions.length;
+    document.getElementById('btn-generate').disabled = totalQ === 0;
+
+    var rewriteCount = Number(state.counts.menulis_ulang_kalimat || 0);
+    var panel = document.getElementById('rewrite-word-panel');
+    panel.classList.toggle('hidden', rewriteCount === 0);
+    document.getElementById('rewrite-count-badge').textContent = rewriteCount;
+
+    var pillsWrap = document.getElementById('word-pills');
+    var pillsHtml = [1, 2, 3, 4, 5].map(function (wc) {
+      var active = state.rewriteWordMode === 'exact' && Number(state.rewriteWordCount) === wc;
+      return '<button type="button" class="pill-btn ' + (active ? 'active' : '') + '" onclick="App.setWordMode(\'exact\',' + wc + ')">' + wc + ' Kata</button>';
+    }).join('');
+    pillsHtml += '<button type="button" class="pill-btn ' + (state.rewriteWordMode === 'progressive' ? 'active' : '') + '" onclick="App.setWordMode(\'progressive\',' + (state.rewriteWordCount || 3) + ')">Bertahap (1, 2, 3+ Kata)</button>';
+    pillsHtml += '<label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#065F46;margin-left:4px;">Custom: <input type="number" min="1" max="20" class="step-val" style="width:52px;" value="' + (state.rewriteWordCount || 3) + '" onchange="App.setWordMode(\'exact\', this.value)" /> kata</label>';
+    pillsWrap.innerHTML = pillsHtml;
+  }
+
+  function generateOfflineQuestions() {
+    readInputsToState();
+    var isArabicMode = state.language.indexOf('Arab') !== -1 || /Arab|Nahwu|Imla|Fiqih|Quran|Hadis|Aqidah/i.test(state.subject);
+    var pureArab = state.language === 'Arab';
+    var customLines = (state.customWordsText || '').split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var arabicCustomWords = customLines.filter(function (l) { return hasArabic(l) && l.split(/\s+/).length === 1; });
+    var topicList = state.subtitles.length > 0 ? state.subtitles : [state.title || state.subject];
+    var list = [];
+    var idxCounter = 0;
+
+    function nextId() { return 'q-' + Date.now() + '-' + (++idxCounter); }
+    function pickDiff() {
+      if (state.difficulty !== 'Campuran') return state.difficulty;
+      return ['Mudah', 'Sedang', 'Sulit'][idxCounter % 3];
+    }
+    function pickCog() {
+      var arr = state.cognitiveLevels.length ? state.cognitiveLevels : ['C2'];
+      return arr[idxCounter % arr.length];
+    }
+
+    // 1. Memisah Huruf Hijaiyah
+    var sepCount = Number(state.counts.memisah_hijaiyah || 0);
+    for (var i = 0; i < sepCount; i++) {
+      var wordObj = arabicCustomWords.length > 0
+        ? { ar: arabicCustomWords[i % arabicCustomWords.length], id: '' }
+        : ARABIC_WORD_BANK[i % ARABIC_WORD_BANK.length];
+      var displayWord = formatArabicText(wordObj.ar, state.harakatMode);
+      var letters = splitArabicToHijaiyah(displayWord);
+      var separated = letters.join(' - ');
+      var nonConnFound = letters.filter(function (l) { return NON_CONNECTING.indexOf(stripHarakat(l)) !== -1; });
+      list.push({
+        id: nextId(),
+        number: list.length + 1,
+        type: 'memisah_hijaiyah',
+        topicTag: 'Memisah Huruf Hijaiyah',
+        difficulty: pickDiff(),
+        cognitiveLevel: pickCog(),
+        weight: 3,
+        isRTL: true,
+        prompt: pureArab
+          ? 'فَصِّلْ حُرُوفَ الْكَلِمَةِ التَّالِيَةِ إِلَى حُرُوفٍ هِجَائِيَّةٍ مُفْرَدَةٍ:'
+          : 'Pisahkan kata bahasa Arab berikut menjadi huruf-huruf hijaiyah tunggal beserta harakatnya:',
+        stimulus: displayWord,
+        stimulusSub: wordObj.id ? 'Arti: ' + wordObj.id : '',
+        letterBoxes: Math.max(letters.length, 4),
+        correctAnswer: separated,
+        explanation: 'Kata "' + displayWord + '" terdiri atas ' + letters.length + ' huruf hijaiyah (' + separated + '). ' +
+          (nonConnFound.length > 0
+            ? 'Huruf yang tidak dapat disambung ke kiri pada kata ini: ' + nonConnFound.join('، ') + '.'
+            : 'Semua huruf awal dan tengahnya dapat disambung ke kiri.'),
+      });
+    }
+
+    // 2. Menyambung Huruf Hijaiyah
+    var joinCount = Number(state.counts.menyambung_hijaiyah || 0);
+    for (var j = 0; j < joinCount; j++) {
+      var wObj = arabicCustomWords.length > 0
+        ? { ar: arabicCustomWords[(j + 2) % arabicCustomWords.length], id: '' }
+        : ARABIC_WORD_BANK[(j + 4) % ARABIC_WORD_BANK.length];
+      var fullWord = formatArabicText(wObj.ar, state.harakatMode);
+      var splitParts = splitArabicToHijaiyah(fullWord).join(' - ');
+      list.push({
+        id: nextId(),
+        number: list.length + 1,
+        type: 'menyambung_hijaiyah',
+        topicTag: 'Menyambung Huruf Hijaiyah',
+        difficulty: pickDiff(),
+        cognitiveLevel: pickCog(),
+        weight: 3,
+        isRTL: true,
+        prompt: pureArab
+          ? 'صِلِ الْحُرُوفَ الْهِجَائِيَّةَ التَّالِيَةَ لِتَكُونَ كَلِمَةً صَحِيحَةً:'
+          : 'Sambungkan huruf-huruf hijaiyah berikut menjadi satu kata Arab yang utuh dan benar:',
+        stimulus: splitParts,
+        stimulusSub: wObj.id ? 'Petunjuk arti: ' + wObj.id : '',
+        correctAnswer: fullWord,
+        explanation: 'Rangkaian huruf (' + splitParts + ') jika disambung sesuai kaidah penulisan awal, tengah, dan akhir menjadi "' + fullWord + '".'
+      });
+    }
+
+    // 3. Menulis Ulang Kalimat (1 kata, 2 kata, 3 kata, dst.)
+    var rwCount = Number(state.counts.menulis_ulang_kalimat || 0);
+    for (var r = 0; r < rwCount; r++) {
+      var wordTarget = state.rewriteWordMode === 'exact'
+        ? Math.max(1, Number(state.rewriteWordCount || 1))
+        : (r % 5) + 1; // 1 kata, 2 kata, 3 kata, 4 kata, 5 kata bertahap
+      var built = buildSentenceOfWordCount(wordTarget, isArabicMode, r, customLines);
+      var targetText = isArabicMode ? formatArabicText(built.text, state.harakatMode) : built.text;
+      list.push({
+        id: nextId(),
+        number: list.length + 1,
+        type: 'menulis_ulang_kalimat',
+        topicTag: 'Menulis Ulang (' + wordTarget + ' Kata)',
+        difficulty: wordTarget <= 2 ? 'Mudah' : wordTarget === 3 ? 'Sedang' : 'Sulit',
+        cognitiveLevel: 'C1',
+        weight: 3,
+        isRTL: isArabicMode,
+        prompt: pureArab
+          ? 'أَعِدْ كِتَابَةَ الْجُمْلَةِ التَّالِيَةِ (' + wordTarget + ' كَلِمَاتٍ) بِخَطٍّ وَاضِحٍ وَصَحِيحٍ:'
+          : 'Tuliskan ulang kata/kalimat berikut (' + wordTarget + ' kata) dengan ejaan' + (isArabicMode ? ' dan harakat' : '') + ' yang rapi dan tepat:',
+        stimulus: targetText,
+        stimulusSub: built.trans ? 'Arti: ' + built.trans : '',
+        wordCountLabel: wordTarget + ' Kata',
+        correctAnswer: targetText,
+        explanation: 'Siswa menyalin ulang "' + targetText + '" (' + wordTarget + ' kata) dengan memperhatikan proporsi huruf, spasi antarkata, serta ' + (isArabicMode ? 'ketepatan harakat dan bentuk sambung huruf hijaiyah.' : 'ejaan serta tanda baca yang benar.')
+      });
+    }
+
+    // 4. Menebalkan Garis & Mewarnai Kata/Kalimat Arab (Ukuran Besar A4 · 2 Soal/Halaman)
+    var traceColorCount = Number(state.counts.menebalkan_mewarnai_arab || 0);
+    for (var tc = 0; tc < traceColorCount; tc++) {
+      var tcPool = (customLines.length > 0 && hasArabic(customLines[tc % customLines.length]))
+        ? { ar: customLines[tc % customLines.length], id: '' }
+        : (tc % 2 === 0
+            ? ARABIC_SENTENCES_BY_WORDS[2][tc % ARABIC_SENTENCES_BY_WORDS[2].length]
+            : ARABIC_WORD_BANK[tc % ARABIC_WORD_BANK.length]);
+      var tcWord = formatArabicText(tcPool.ar, state.harakatMode);
+      list.push({
+        id: nextId(),
+        number: list.length + 1,
+        type: 'menebalkan_mewarnai_arab',
+        topicTag: 'Menebalkan & Mewarnai Arab',
+        difficulty: 'Mudah',
+        cognitiveLevel: 'C1',
+        weight: 4,
+        isArabic: true,
+        isRTL: false,
+        prompt: pureArab
+          ? 'تَتَبَّعِ الْخُطُوطَ لِلْكَلِمَةِ التَّالِيَةِ ثُمَّ لَوِّنْهَا بِأَلْوَانٍ جَمِيلَةٍ:'
+          : 'Tebalkan garis huruf Arab berikut dengan rapi menggunakan pensil, kemudian warnailah kata/kalimat Arab di bawahnya dengan warna yang indah!',
+        arabicPrompt: tcWord,
+        readingTranslation: tcPool.id || '',
+        stimulus: tcWord,
+        stimulusSub: tcPool.id ? 'Arti: ' + tcPool.id : '',
+        correctAnswer: tcWord + (tcPool.id ? ' (' + tcPool.id + ')' : ''),
+        explanation: 'Siswa menebalkan garis huruf Arab "' + tcWord + '" beserta harakatnya secara presisi, lalu mewarnai bentuk huruf kaligrafi besar dengan rapi dan bersih.',
+        rubric: 'Kerapian menebalkan garis huruf & harakat (50%), keindahan & kebersihan mewarnai (50%).'
+      });
+    }
+
+    // 5. Other standard types (offline smart assembly from topic/vocab)
+    QUESTION_TYPES.forEach(function (qt) {
+      if (qt.id === 'memisah_hijaiyah' || qt.id === 'menyambung_hijaiyah' || qt.id === 'menulis_ulang_kalimat' || qt.id === 'menebalkan_mewarnai_arab') return;
+      var cnt = Number(state.counts[qt.id] || 0);
+      for (var k = 0; k < cnt; k++) {
+        var topic = topicList[k % topicList.length];
+        var vocab = ARABIC_WORD_BANK[(k + idxCounter) % ARABIC_WORD_BANK.length];
+        if (qt.id === 'pilihan_ganda' || qt.id === 'hots' || qt.id === 'pilihan_ganda_kompleks' || qt.id === 'berbasis_gambar' || qt.id === 'berbasis_bacaan') {
+          var isK = qt.id === 'pilihan_ganda_kompleks';
+          var optLimit = Number(state.optionCount || 5);
+          if (optLimit !== 3 && optLimit !== 4 && optLimit !== 5) optLimit = 5;
+          var optsFull = isArabicMode
+            ? [
+                { label: pureArab ? 'أ' : 'A', text: formatArabicText(vocab.ar, state.harakatMode) + ' (' + vocab.id + ')', isCorrect: true },
+                { label: pureArab ? 'ب' : 'B', text: formatArabicText(ARABIC_WORD_BANK[(k + 1) % ARABIC_WORD_BANK.length].ar, state.harakatMode), isCorrect: isK },
+                { label: pureArab ? 'ج' : 'C', text: formatArabicText(ARABIC_WORD_BANK[(k + 2) % ARABIC_WORD_BANK.length].ar, state.harakatMode), isCorrect: false },
+                { label: pureArab ? 'د' : 'D', text: formatArabicText(ARABIC_WORD_BANK[(k + 3) % ARABIC_WORD_BANK.length].ar, state.harakatMode), isCorrect: false },
+                { label: pureArab ? 'هـ' : 'E', text: formatArabicText(ARABIC_WORD_BANK[(k + 4) % ARABIC_WORD_BANK.length].ar, state.harakatMode), isCorrect: false }
+              ]
+            : [
+                { label: 'A', text: 'Konsep utama dan penerapan tepat pada ' + topic, isCorrect: true },
+                { label: 'B', text: 'Analisis pendukung yang selaras dengan ' + topic, isCorrect: isK },
+                { label: 'C', text: 'Pernyataan yang bertentangan dengan prinsip ' + topic, isCorrect: false },
+                { label: 'D', text: 'Kesimpulan keliru di luar lingkup ' + topic, isCorrect: false },
+                { label: 'E', text: 'Asumsi tidak relevan terhadap materi', isCorrect: false }
+              ];
+          var opts = optsFull.slice(0, optLimit);
+          list.push({
+            id: nextId(),
+            number: list.length + 1,
+            type: qt.id,
+            topicTag: topic,
+            difficulty: pickDiff(),
+            cognitiveLevel: pickCog(),
+            weight: qt.weight,
+            isRTL: pureArab,
+            prompt: isArabicMode
+              ? 'Pilih jawaban yang paling tepat terkait "' + topic + '" untuk kata/konsep «' + formatArabicText(vocab.ar, state.harakatMode) + '»:'
+              : 'Manakah pernyataan yang paling tepat mengenai "' + topic + '" (' + state.subject + ')?',
+            options: opts,
+            correctAnswer: opts.filter(function (o) { return o.isCorrect; }).map(function (o) { return o.label; }).join(', '),
+            explanation: 'Jawaban benar sesuai kaidah pokok pada subbab "' + topic + '".'
+          });
+        } else if (qt.id === 'benar_salah') {
+          var bsOpts = [
+            { label: 'A', text: pureArab ? 'صَوَابٌ' : 'Benar', isCorrect: true },
+            { label: 'B', text: pureArab ? 'خَطَأٌ' : 'Salah', isCorrect: false }
+          ];
+          list.push({
+            id: nextId(),
+            number: list.length + 1,
+            type: qt.id,
+            topicTag: topic,
+            difficulty: pickDiff(),
+            cognitiveLevel: pickCog(),
+            weight: qt.weight,
+            isRTL: pureArab,
+            prompt: isArabicMode
+              ? 'Kata «' + formatArabicText(vocab.ar, state.harakatMode) + '» dalam bahasa Indonesia berarti "' + vocab.id + '".'
+              : 'Pemahaman konsep inti pada "' + topic + '" membantu memecahkan permasalahan kontekstual secara tepat.',
+            options: bsOpts,
+            correctAnswer: pureArab ? 'صَوَابٌ' : 'Benar',
+            explanation: 'Pernyataan sesuai dengan definisi dan kaidah materi.'
+          });
+        } else if (qt.id === 'menjodohkan') {
+          var p1 = ARABIC_WORD_BANK[0], p2 = ARABIC_WORD_BANK[1], p3 = ARABIC_WORD_BANK[2], p4 = ARABIC_WORD_BANK[3];
+          var pairs = isArabicMode
+            ? [
+                { left: formatArabicText(p1.ar, state.harakatMode), right: p1.id },
+                { left: formatArabicText(p2.ar, state.harakatMode), right: p2.id },
+                { left: formatArabicText(p3.ar, state.harakatMode), right: p3.id },
+                { left: formatArabicText(p4.ar, state.harakatMode), right: p4.id }
+              ]
+            : [
+                { left: 'Konsep Dasar ' + topic, right: 'Definisi utama materi' },
+                { left: 'Prinsip Kerja', right: 'Mekanisme proses materi' },
+                { left: 'Contoh Penerapan', right: 'Kasus nyata sehari-hari' },
+                { left: 'Evaluasi Kritis', right: 'Analisis dampak & solusi' }
+              ];
+          var syncMatch = getSynchronizedMatching(pairs);
+          list.push({
+            id: nextId(),
+            number: list.length + 1,
+            type: qt.id,
+            topicTag: topic,
+            difficulty: pickDiff(),
+            cognitiveLevel: pickCog(),
+            weight: qt.weight,
+            isRTL: false,
+            prompt: 'Pasangkan item pada Kolom Kiri (1–4) dengan pasangan yang tepat pada Pilihan Kanan (A–D), lalu tuliskan huruf & pasangan jawabannya pada kotak isian yang tersedia (' + topic + '):',
+            matchingPairs: pairs,
+            correctAnswer: syncMatch.answerKey,
+            explanation: 'Setiap pasangan berkorespondensi langsung sesuai urutan Kolom Kiri (1–4) dan Pilihan Kanan (A–D).'
+          });
+        } else {
+          list.push({
+            id: nextId(),
+            number: list.length + 1,
+            type: qt.id,
+            topicTag: topic,
+            difficulty: pickDiff(),
+            cognitiveLevel: pickCog(),
+            weight: qt.weight,
+            isRTL: pureArab,
+            prompt: 'Jelaskan dan uraikan secara sistematis konsep utama pada pokok bahasan "' + topic + '" (' + state.title + ')!',
+            correctAnswer: 'Uraian mencakup definisi konsep, kaidah inti, serta contoh penerapan yang relevan pada ' + topic + '.',
+            explanation: 'Penilaian menekankan ketepatan istilah, kelengkapan alasan, dan kesesuaian contoh.',
+            rubric: 'Skor penuh jika menyebutkan konsep inti (50%) dan contoh tepat (50%).'
+          });
+        }
+      }
+    });
+
+    if (state.shuffleQuestions && list.length > 1) {
+      for (var s = list.length - 1; s > 0; s--) {
+        var swap = Math.floor(Math.random() * (s + 1));
+        var tmp = list[s]; list[s] = list[swap]; list[swap] = tmp;
+      }
+    }
+    list.forEach(function (q, idx) {
+      q.number = idx + 1;
+      var kRow = buildKisiKisiRow(q);
+      q.capaianPembelajaran = kRow.cp;
+      q.tujuanPembelajaran = kRow.tp;
+      q.indikatorSoal = kRow.indikator;
+    });
+    return list;
+  }
+
+  function getSynchronizedMatching(pairs) {
+    if (!Array.isArray(pairs) || pairs.length === 0) {
+      return { rows: [], rightOptions: [], answerKey: '' };
+    }
+    var n = pairs.length;
+    var order = n === 4 ? [1, 3, 0, 2] : pairs.map(function (_, i) { return n > 1 ? (i + 1) % n : 0; });
+    var rightOptions = order.map(function (origIdx, dispIdx) {
+      return {
+        letter: String.fromCharCode(65 + dispIdx),
+        text: (pairs[origIdx] && pairs[origIdx].right) || '',
+        originalIndex: origIdx
+      };
+    });
+    var rows = pairs.map(function (p, idx) {
+      var matched = rightOptions.find(function (o) { return o.originalIndex === idx; });
+      return {
+        number: idx + 1,
+        left: p.left || '',
+        correctLetter: (matched && matched.letter) || String.fromCharCode(65 + idx),
+        correctRight: p.right || ''
+      };
+    });
+    var answerKey = rows.map(function (r) {
+      return r.number + ' → ' + r.correctLetter + ' (' + r.correctRight + ')';
+    }).join('; ');
+    return { rows: rows, rightOptions: rightOptions, answerKey: answerKey };
+  }
+
+  function renderEditor() {
+    var wrap = document.getElementById('questions-container');
+    document.getElementById('ed-title').textContent = state.title || 'Editor & Preview Soal';
+    document.getElementById('ed-meta').textContent = state.subject + ' · Jenjang ' + state.level + (state.gradeClass ? ' · ' + state.gradeClass : '') + ' · ' + state.language + ' · ' + state.questions.length + ' butir soal';
+
+    ['student', 'teacher', 'edit'].forEach(function (m) {
+      var btn = document.getElementById('mode-' + m);
+      btn.className = 'btn btn-sm ' + (state.displayMode === m ? '' : 'btn-sec');
+    });
+
+    if (state.questions.length === 0) {
+      wrap.innerHTML = '<div class="card" style="text-align:center;padding:42px;">' +
+        '<h3>Belum Ada Soal</h3>' +
+        '<p style="color:var(--muted);font-size:13.5px;margin:8px 0 16px;">Atur jenis dan jumlah soal pada tab Buat Soal, lalu klik BUAT SOAL OTOMATIS.</p>' +
+        '<button type="button" class="btn" onclick="App.setTab(\'generator\')">Kembali ke Generator</button>' +
+      '</div>';
+      return;
+    }
+
+    wrap.innerHTML = state.questions.map(function (q, idx) {
+      var meta = QUESTION_TYPES.find(function (t) { return t.id === q.type; }) || { name: q.type };
+      var cleanP = cleanAsterisks(q.prompt);
+      var cleanStim = cleanAsterisks(q.stimulus);
+      var cleanStimSub = cleanAsterisks(q.stimulusSub);
+      var cleanAns = cleanAsterisks(q.correctAnswer);
+      var cleanExp = cleanAsterisks(q.explanation);
+      var cleanRub = cleanAsterisks(q.rubric);
+      var isArPrompt = hasArabic(cleanP);
+      var promptDir = getDir(cleanP);
+      var promptAlign = promptDir === 'rtl' ? 'right' : 'left';
+      var stimDir = getDir(cleanStim);
+      var stimAlign = stimDir === 'rtl' ? 'right' : 'left';
+      var ansDir = getDir(cleanAns);
+      var ansAlign = ansDir === 'rtl' ? 'right' : 'left';
+      var expDir = getDir(cleanExp);
+      var expAlign = expDir === 'rtl' ? 'right' : 'left';
+
+      if (state.displayMode === 'edit') {
+        return '<div class="q-card">' +
+          '<div class="q-meta"><strong>Soal ' + q.number + ' · ' + esc(meta.name) + '</strong>' +
+            '<div style="display:flex;gap:6px;">' +
+              (state.settings.aiMode !== 'offline' ? '<button type="button" class="btn btn-sec btn-sm" onclick="App.regenerateQ(' + idx + ')">Buat Ulang Live</button>' : '') +
+              '<button type="button" class="btn btn-danger btn-sm" onclick="App.deleteQuestion(' + idx + ')">Hapus</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="field"><label class="label">Pertanyaan</label><textarea class="textarea ' + (isArPrompt ? 'font-arabic' : '') + '" dir="' + promptDir + '" style="text-align:' + promptAlign + ';" onchange="App.updateQ(' + idx + ',\'prompt\',this.value)">' + esc(cleanP) + '</textarea></div>' +
+          (q.stimulus !== undefined && q.stimulus !== ''
+            ? '<div class="field"><label class="label">Kata / Kalimat Stimulus</label><input class="input font-arabic" dir="' + stimDir + '" style="text-align:' + stimAlign + ';" value="' + esc(cleanStim) + '" onchange="App.updateQ(' + idx + ',\'stimulus\',this.value)" /></div>'
+            : '') +
+          (q.type === 'menjodohkan' || (q.matchingPairs && q.matchingPairs.length > 0)
+            ? '<div class="field" style="background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:10px 12px;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+                  '<label class="label" style="margin:0;">Pasangan Menjodohkan (Kolom Kiri ↔ Pasangan Benar)</label>' +
+                  '<button type="button" class="btn btn-sec btn-sm" style="min-height:28px;padding:2px 8px;font-size:11px;" onclick="App.addMatchingPair(' + idx + ')">+ Tambah Pasangan</button>' +
+                '</div>' +
+                (q.matchingPairs || []).map(function (pair, pi) {
+                  var lDir = getDir(pair.left);
+                  var rDir = getDir(pair.right);
+                  return '<div style="display:grid;grid-template-columns:26px 1fr 1fr 64px;gap:6px;align-items:center;margin-bottom:6px;">' +
+                    '<strong class="font-mono" style="font-size:12px;">' + (pi + 1) + '.</strong>' +
+                    '<input class="input ' + (hasArabic(pair.left) ? 'font-arabic' : '') + '" dir="' + lDir + '" style="text-align:' + (lDir === 'rtl' ? 'right' : 'left') + ';" value="' + esc(pair.left) + '" placeholder="Item kiri..." onchange="App.updateMatchingPair(' + idx + ',' + pi + ',\'left\',this.value)" />' +
+                    '<input class="input ' + (hasArabic(pair.right) ? 'font-arabic' : '') + '" dir="' + rDir + '" style="text-align:' + (rDir === 'rtl' ? 'right' : 'left') + ';" value="' + esc(pair.right) + '" placeholder="Pasangan benar..." onchange="App.updateMatchingPair(' + idx + ',' + pi + ',\'right\',this.value)" />' +
+                    '<button type="button" class="btn btn-danger btn-sm" style="min-height:34px;padding:2px 8px;font-size:11px;" onclick="App.removeMatchingPair(' + idx + ',' + pi + ')">Hapus</button>' +
+                  '</div>';
+                }).join('') +
+              '</div>'
+            : '') +
+          '<div class="row-2 field">' +
+            '<div><label class="label">Kunci Jawaban</label><input class="input ' + (hasArabic(cleanAns) ? 'font-arabic' : '') + '" dir="' + ansDir + '" style="text-align:' + ansAlign + ';" value="' + esc(cleanAns) + '" onchange="App.updateQ(' + idx + ',\'correctAnswer\',this.value)" /></div>' +
+            '<div><label class="label">Bobot Poin</label><input type="number" class="input" value="' + q.weight + '" onchange="App.updateQ(' + idx + ',\'weight\',Number(this.value))" /></div>' +
+          '</div>' +
+          '<div class="row-2 field">' +
+            '<div><label class="label">Tujuan Pembelajaran (TP · Kurikulum Merdeka)</label><input class="input" value="' + esc(q.tujuanPembelajaran || buildKisiKisiRow(q).tp) + '" onchange="App.updateQ(' + idx + ',\'tujuanPembelajaran\',this.value)" /></div>' +
+            '<div><label class="label">Indikator Soal (Kisi-Kisi)</label><input class="input" value="' + esc(q.indikatorSoal || buildKisiKisiRow(q).indikator) + '" onchange="App.updateQ(' + idx + ',\'indikatorSoal\',this.value)" /></div>' +
+          '</div>' +
+          '<div class="field"><label class="label">Pembahasan</label><textarea class="textarea" dir="' + expDir + '" style="text-align:' + expAlign + ';" onchange="App.updateQ(' + idx + ',\'explanation\',this.value)">' + esc(cleanExp) + '</textarea></div>' +
+        '</div>';
+      }
+
+      var stimulusHtml = (cleanStim && q.type !== 'menebalkan_mewarnai_arab')
+        ? '<div class="q-stimulus ' + (stimDir === 'rtl' ? 'rtl' : (hasArabic(cleanStim) ? 'font-arabic' : '')) + '" dir="' + stimDir + '" style="text-align:' + stimAlign + ';' + (hasArabic(cleanStim) && stimDir === 'ltr' ? 'font-size:21px;line-height:2;' : '') + '">' +
+            '<div>' + esc(cleanStim) + '</div>' +
+            (cleanStimSub && state.displayMode === 'teacher' ? '<div dir="ltr" style="font-family:DM Sans,sans-serif;font-size:12px;color:var(--muted);margin-top:4px;text-align:left;">' + esc(cleanStimSub) + '</div>' : '') +
+          '</div>'
+        : '';
+
+      var visualHtml = q.svgMarkup
+        ? '<div class="q-visual">' + q.svgMarkup + (q.visualCaption ? '<div style="font-size:11.5px;color:var(--muted);margin-top:4px;">' + esc(q.visualCaption) + '</div>' : '') + '</div>'
+        : '';
+
+      var studentWorkspace = '';
+      if (q.type === 'menebalkan_mewarnai_arab') {
+        var arBig = cleanStim || cleanAsterisks(q.arabicPrompt) || cleanAns || '';
+        studentWorkspace = '<div class="arabic-a4-big-card" dir="ltr" style="margin-top:10px;text-align:left;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:10px;">' +
+            '<span style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;">Lembar Kerja Besar A4 (Maks. 2 Soal / Halaman)</span>' +
+            (cleanStimSub ? '<span style="font-size:11.5px;font-weight:600;color:#065F46;background:#ECFDF5;padding:2px 8px;border-radius:6px;">' + esc(cleanStimSub) + '</span>' : '') +
+          '</div>' +
+          '<div style="border:1px dashed #94A3B8;border-radius:10px;padding:10px 14px;background:#F8FAFC;margin-bottom:10px;">' +
+            '<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:6px;">1. Tebalkan Garis Kata / Kalimat Arab (التَّتَبُّعُ):</div>' +
+            '<div class="arabic-khat-guides" style="min-height:110px;background-color:#FFFFFF;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:8px 14px;text-align:center;">' +
+              '<span dir="rtl" class="arabic-trace-text">' + esc(arBig) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="border:2px solid #94A3B8;border-radius:10px;padding:10px 14px;background:#FFFFFF;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;margin-bottom:6px;">' +
+              '<span>2. Warnailah Kata / Kalimat Arab Berikut (التَّلْوِينُ):</span>' +
+              '<span style="font-weight:500;color:#64748B;">Gunakan pensil warna / krayon</span>' +
+            '</div>' +
+            '<div style="min-height:130px;border:1px dashed #E2E8F0;border-radius:8px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;padding:8px 14px;text-align:center;">' +
+              '<span dir="rtl" class="arabic-color-text">' + esc(arBig) + '</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      } else if (q.type === 'memisah_hijaiyah') {
+        var boxes = '';
+        for (var b = 0; b < (q.letterBoxes || 5); b++) boxes += '<span class="hijaiyah-box"></span>';
+        studentWorkspace = '<div dir="' + (isPureArabic(cleanStim || cleanP) ? 'rtl' : 'ltr') + '" class="hijaiyah-boxes">' + boxes + '</div>';
+      } else if (q.type === 'menyambung_hijaiyah') {
+        studentWorkspace = '<div dir="' + (isPureArabic(cleanStim || cleanP) ? 'rtl' : 'ltr') + '" style="margin-top:8px;"><div style="height:40px;max-width:260px;border:1px solid #CBD5E1;border-radius:8px;background:#F8FAFC;"></div></div>';
+      } else if (q.type === 'menulis_ulang_kalimat') {
+        studentWorkspace = '<div class="write-lines"><div class="write-line"></div><div class="write-line"></div></div>';
+      } else if (q.options && q.options.length > 0) {
+        studentWorkspace = '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">' + q.options.map(function (o) {
+          var oText = cleanAsterisks(o.text);
+          var oAr = hasArabic(oText);
+          var oPureAr = isPureArabic(oText);
+          var rowRtl = isPureArabic((o.label || '') + ' ' + oText) || (promptDir === 'rtl' && oPureAr);
+          var hi = state.displayMode === 'teacher' && o.isCorrect;
+          return '<div dir="' + (rowRtl ? 'rtl' : 'ltr') + '" class="' + (oAr ? 'font-arabic' : '') + '" style="text-align:' + (rowRtl ? 'right' : 'left') + ';padding:8px 12px;border:1px solid ' + (hi ? '#6EE7B7' : 'var(--border)') + ';background:' + (hi ? '#ECFDF5' : '#FFFFFF') + ';border-radius:8px;font-size:' + (oAr ? '18px' : '13.5px') + ';">' +
+            '<strong>' + esc(o.label) + '.</strong> ' +
+            (oPureAr && !rowRtl ? '<span dir="rtl" style="unicode-bidi:isolate;">' + esc(oText) + '</span>' : esc(oText)) +
+          '</div>';
+        }).join('') + '</div>';
+      } else if (q.matchingPairs && q.matchingPairs.length > 0) {
+        var syncM = getSynchronizedMatching(q.matchingPairs);
+        var lastL = (syncM.rightOptions[syncM.rightOptions.length - 1] && syncM.rightOptions[syncM.rightOptions.length - 1].letter) || 'D';
+        studentWorkspace = '<div dir="ltr" style="margin-top:10px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:12px;text-align:left;">' +
+          '<div style="font-size:12px;color:#334155;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px 10px;margin-bottom:10px;">' +
+            'Pasangkan <strong>Kolom Kiri (1–' + syncM.rows.length + ')</strong> dengan <strong>Pilihan Kanan (A–' + lastL + ')</strong>, lalu tuliskan huruf &amp; pasangan jawabannya pada kotak isian yang luas di bawah ini.' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:12px;">' +
+            '<div style="background:#FFFFFF;border:1px solid var(--border);border-radius:8px;padding:10px;">' +
+              '<div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;margin-bottom:6px;">Kolom Kiri (1–' + syncM.rows.length + ')</div>' +
+              syncM.rows.map(function (r) {
+                var rPure = isPureArabic(r.left);
+                return '<div dir="' + (rPure ? 'rtl' : 'ltr') + '" class="' + (hasArabic(r.left) ? 'font-arabic' : '') + '" style="text-align:' + (rPure ? 'right' : 'left') + ';padding:5px 0;border-bottom:1px dashed var(--border);font-size:' + (hasArabic(r.left) ? '18px' : '13.5px') + ';">' +
+                  (rPure ? '<span dir="ltr" style="unicode-bidi:isolate;"><strong>' + r.number + '.</strong></span> ' + esc(r.left) : '<strong>' + r.number + '.</strong> ' + esc(r.left)) +
+                '</div>';
+              }).join('') +
+            '</div>' +
+            '<div style="background:#FFFFFF;border:1px solid var(--border);border-radius:8px;padding:10px;">' +
+              '<div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;margin-bottom:6px;">Pilihan Kanan (A–' + lastL + ')</div>' +
+              syncM.rightOptions.map(function (opt) {
+                var oPure = isPureArabic(opt.text);
+                return '<div dir="' + (oPure ? 'rtl' : 'ltr') + '" class="' + (hasArabic(opt.text) ? 'font-arabic' : '') + '" style="text-align:' + (oPure ? 'right' : 'left') + ';padding:5px 0;border-bottom:1px dashed var(--border);font-size:' + (hasArabic(opt.text) ? '18px' : '13.5px') + ';">' +
+                  (oPure ? '<span dir="ltr" style="unicode-bidi:isolate;"><strong>' + opt.letter + '.</strong></span> ' + esc(opt.text) : '<strong>' + opt.letter + '.</strong> ' + esc(opt.text)) +
+                '</div>';
+              }).join('') +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:6px;">Kotak Isian Jawaban Siswa:</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;">' +
+            syncM.rows.map(function (r) {
+              var isT = state.displayMode === 'teacher';
+              return '<div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;padding:8px 10px;">' +
+                '<div style="font-size:11.5px;font-weight:600;color:#475569;margin-bottom:5px;">Jawaban No. ' + r.number + ' (' + esc(cleanAsterisks(r.left).slice(0, 28)) + (cleanAsterisks(r.left).length > 28 ? '…' : '') + ')</div>' +
+                '<div class="' + (isT && hasArabic(r.correctRight) ? 'font-arabic' : '') + '" style="min-height:54px;border:1.5px dashed ' + (isT ? '#10B981' : '#94A3B8') + ';background:' + (isT ? '#ECFDF5' : '#F8FAFC') + ';border-radius:6px;padding:8px 10px;display:flex;align-items:center;font-weight:' + (isT ? '700' : '400') + ';font-size:' + (isT && hasArabic(r.correctRight) ? '18px' : '13.5px') + ';color:' + (isT ? '#065F46' : '#64748B') + ';">' +
+                  (isT ? esc(r.correctLetter + ' — ' + r.correctRight) : '') +
+                '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+        '</div>';
+      } else if (q.sequenceItems && q.sequenceItems.length > 0) {
+        studentWorkspace = '<div style="margin-top:8px;background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13.5px;">' +
+          q.sequenceItems.map(function (item, si) {
+            var sDir = getDir(item);
+            return '<div dir="' + sDir + '" style="text-align:' + (sDir === 'rtl' ? 'right' : 'left') + ';padding:3px 0;">[ ' + (state.displayMode === 'teacher' ? (si + 1) : '...') + ' ] ' + esc(item) + '</div>';
+          }).join('') +
+        '</div>';
+      }
+
+      var teacherBox = state.displayMode === 'teacher'
+        ? '<div class="answer-box" dir="ltr" style="text-align:left;">' +
+            '<div dir="' + ansDir + '" style="text-align:' + ansAlign + ';"><strong>Kunci Jawaban:</strong> <span dir="' + ansDir + '" class="' + (hasArabic(cleanAns) ? 'font-arabic' : '') + '" style="font-size:' + (hasArabic(cleanAns) ? '19px' : '13px') + ';font-weight:700;">' + esc(cleanAns) + '</span></div>' +
+            (cleanExp ? '<div dir="' + expDir + '" style="text-align:' + expAlign + ';margin-top:4px;"><strong>Pembahasan:</strong> ' + esc(cleanExp) + '</div>' : '') +
+            (cleanRub ? '<div dir="' + getDir(cleanRub) + '" style="text-align:' + (isPureArabic(cleanRub) ? 'right' : 'left') + ';margin-top:4px;"><strong>Rubrik:</strong> ' + esc(cleanRub) + '</div>' : '') +
+          '</div>'
+        : '';
+
+      return '<article class="q-card">' +
+        '<div class="q-meta">' +
+          '<div><strong class="font-mono" style="color:var(--text);">Soal ' + q.number + '</strong> · ' + esc(meta.name) + ' · ' + esc(q.cognitiveLevel) + ' · ' + esc(q.difficulty) + ' · <span class="font-mono">' + q.weight + ' poin</span></div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            (q.wordCountLabel ? '<span style="font-weight:700;color:#059669;">' + esc(q.wordCountLabel) + '</span>' : '') +
+            (state.settings.aiMode !== 'offline' ? '<button type="button" class="btn btn-sec btn-sm" style="min-height:28px;padding:2px 8px;font-size:11px;" onclick="App.regenerateQ(' + idx + ')">Buat Ulang Live</button>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="q-prompt ' + (promptDir === 'rtl' ? 'rtl' : (isArPrompt ? 'font-arabic' : '')) + '" dir="' + promptDir + '" style="text-align:' + promptAlign + ';">' + esc(cleanP) + '</div>' +
+        stimulusHtml +
+        visualHtml +
+        studentWorkspace +
+        teacherBox +
+      '</article>';
+    }).join('');
+  }
+
+  function renderKisiKisi() {
+    var wrap = document.getElementById('kisi-container');
+    var metaEl = document.getElementById('kisi-meta');
+    var fase = getFaseKurikulumMerdeka(state.level, state.settings.gradeClass);
+    if (metaEl) {
+      metaEl.textContent = (state.subject || '') + ' · ' + fase + ' · ' + state.questions.length + ' butir soal Kurikulum Merdeka';
+    }
+    if (!state.questions || state.questions.length === 0) {
+      wrap.innerHTML = '<div class="card" style="text-align:center;padding:42px;"><h3>Belum Ada Soal</h3><p style="color:var(--muted);font-size:13.5px;margin:8px 0 16px;">Buat soal terlebih dahulu untuk melihat dan mengedit Kisi-Kisi Kurikulum Merdeka.</p><button type="button" class="btn" onclick="App.setTab(\'generator\')">Kembali ke Generator</button></div>';
+      return;
+    }
+    var cpFirst = buildKisiKisiRow(state.questions[0]).cp;
+    wrap.innerHTML = '<div class="card">' +
+      '<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#1E3A8A;">' +
+        '<strong>Capaian Pembelajaran (CP · ' + esc(fase) + '):</strong> ' + esc(cpFirst) +
+      '</div>' +
+      '<div style="overflow-x:auto;">' +
+        '<table class="kisi-table">' +
+          '<thead><tr>' +
+            '<th style="width:36px;text-align:center;">No</th>' +
+            '<th style="width:26%;">Tujuan Pembelajaran (TP)</th>' +
+            '<th style="width:16%;">Lingkup Materi</th>' +
+            '<th style="width:36%;">Indikator Soal</th>' +
+            '<th style="width:14%;">Level &amp; Bentuk</th>' +
+            '<th style="width:48px;text-align:center;">Bobot</th>' +
+          '</tr></thead>' +
+          '<tbody>' +
+            state.questions.map(function (q, idx) {
+              var r = buildKisiKisiRow(q);
+              return '<tr>' +
+                '<td style="text-align:center;font-weight:700;">' + r.number + '</td>' +
+                '<td><textarea class="textarea" style="min-height:54px;font-size:11.5px;padding:5px 7px;" onchange="App.updateQ(' + idx + ',\'tujuanPembelajaran\',this.value)">' + esc(r.tp) + '</textarea></td>' +
+                '<td><input class="input" style="min-height:34px;font-size:11.5px;padding:4px 7px;" value="' + esc(r.materi) + '" onchange="App.updateQ(' + idx + ',\'topicTag\',this.value)" /></td>' +
+                '<td><textarea class="textarea" style="min-height:54px;font-size:11.5px;padding:5px 7px;" onchange="App.updateQ(' + idx + ',\'indikatorSoal\',this.value)">' + esc(r.indikator) + '</textarea></td>' +
+                '<td><strong>' + esc(r.cognitiveLevel) + '</strong> (' + esc(r.thinkingTier) + ')<div style="font-size:10.5px;color:#475569;">' + esc(r.bentukSoal) + '</div></td>' +
+                '<td style="text-align:center;font-weight:700;">' + r.weight + '</td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function buildExportSheetHtml(mode) {
+    var s = state.settings;
+    var compact = state.compactPrint !== false;
+    var includeKisi = state.includeKisiKisi !== false;
+    var showQ = mode === 'complete' || mode === 'questions_only';
+    var showK = mode === 'complete' || mode === 'answers_only';
+    var showKisi = mode === 'kisi_kisi_only' || (mode === 'complete' && includeKisi);
+    var activeGrade = state.gradeClass || s.gradeClass || '';
+    var fase = getFaseKurikulumMerdeka(state.level, activeGrade);
+    var html = '<div class="print-sheet' + (compact ? ' compact' : '') + '">';
+
+    if (showQ) {
+      html += '<div class="kop">' +
+        '<div style="font-size:' + (compact ? '15px' : '18px') + ';font-weight:800;text-transform:uppercase;color:#0F294A;">' + esc(s.institutionName) + '</div>' +
+        '<div style="font-size:11px;color:#475569;">' + esc(s.institutionAddress) + '</div>' +
+      '</div>' +
+      '<div style="text-align:center;margin-bottom:' + (compact ? '8px' : '12px') + ';">' +
+        '<div style="font-size:' + (compact ? '13px' : '15px') + ';font-weight:700;text-transform:uppercase;">' + esc(s.examTitle) + ' · ' + esc(state.subject) + ' (' + esc(state.title) + ')</div>' +
+      '</div>' +
+      '<table class="sheet-table"><tbody>' +
+        '<tr><td><strong>Jenjang / Kelas / Fase:</strong> ' + esc(state.level) + ' · ' + esc(activeGrade || '-') + ' (' + esc(fase) + ')</td><td><strong>Guru / Waktu:</strong> ' + esc(s.teacherName) + ' · ' + esc(s.timeAllocation) + '</td></tr>' +
+        '<tr><td><strong>Nama Siswa:</strong> .............................................</td><td><strong>Kelas / No:</strong> ................... / ...................</td></tr>' +
+      '</tbody></table>';
+
+      var bigArabicCounter = 0;
+      html += state.questions.map(function (q, qIdx) {
+        var isBigArabic = q.type === 'menebalkan_mewarnai_arab';
+        var prevIsBig = qIdx > 0 && state.questions[qIdx - 1].type === 'menebalkan_mewarnai_arab';
+        var pageBreakClass = '';
+        if (isBigArabic) {
+          if (bigArabicCounter === 0 && qIdx > 0) {
+            pageBreakClass = 'print-break';
+          } else if (bigArabicCounter % 2 === 1 && qIdx < state.questions.length - 1) {
+            pageBreakClass = 'print-break-after';
+          }
+          bigArabicCounter++;
+        } else if (prevIsBig && bigArabicCounter % 2 === 1) {
+          pageBreakClass = 'print-break';
+        }
+
+        if (isBigArabic) {
+          var arTarget = q.stimulus || q.arabicPrompt || q.correctAnswer || '';
+          return '<div class="arabic-a4-big-card avoid-break ' + pageBreakClass + '" dir="ltr" style="text-align:left;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">' +
+              '<div style="font-weight:700;font-size:12.5px;color:#0F172A;">' + q.number + '. ' + esc(q.prompt) + '</div>' +
+              (q.stimulusSub ? '<span style="font-size:10.5px;font-weight:600;color:#334155;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:5px;padding:2px 7px;">' + esc(q.stimulusSub) + '</span>' : '') +
+            '</div>' +
+            '<div style="margin-top:6px;border:1px dashed #94A3B8;border-radius:8px;padding:6px 10px;background:#F8FAFC;">' +
+              '<div style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;">A. Tebalkan Garis Kata / Kalimat (التَّتَبُّعُ):</div>' +
+              '<div class="arabic-khat-guides" style="margin-top:4px;min-height:34mm;background-color:#FFFFFF;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:4px 10px;text-align:center;">' +
+                '<span dir="rtl" class="arabic-trace-text">' + esc(arTarget) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div style="margin-top:6px;border:2px solid #94A3B8;border-radius:8px;padding:6px 10px;background:#FFFFFF;">' +
+              '<div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;">' +
+                '<span>B. Warnailah Kata / Kalimat Arab Berikut (التَّلْوِينُ):</span>' +
+                '<span style="font-weight:400;color:#64748B;">Nilai Kerapian: [ ..... ]</span>' +
+              '</div>' +
+              '<div style="margin-top:4px;min-height:42mm;border:1px dashed #CBD5E1;border-radius:6px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;padding:4px 10px;text-align:center;">' +
+                '<span dir="rtl" class="arabic-color-text">' + esc(arTarget) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }
+
+        var cleanP = cleanAsterisks(q.prompt);
+        var cleanStim = cleanAsterisks(q.stimulus);
+        var isArPrompt = hasArabic(cleanP);
+        var pDir = getDir(cleanP);
+        var pAlign = pDir === 'rtl' ? 'right' : 'left';
+        var sDir = getDir(cleanStim);
+        var sAlign = sDir === 'rtl' ? 'right' : 'left';
+        var useTwoColOpts = compact && q.options && q.options.length >= 2 && q.options.every(function (o) {
+          return cleanAsterisks(o.text || '').length <= 36;
+        });
+        var block = '<div class="avoid-break ' + pageBreakClass + '" dir="' + pDir + '" style="margin-bottom:' + (compact ? '9px' : '16px') + ';text-align:' + pAlign + ';">';
+        block += '<div dir="' + pDir + '" class="' + (isArPrompt ? 'font-arabic' : '') + '" style="text-align:' + pAlign + ';font-weight:600;font-size:' + (isArPrompt ? (compact ? '16px' : '18px') : (compact ? '12.5px' : '14px')) + ';line-height:' + (isArPrompt ? '1.85' : '1.35') + ';">' + (pDir === 'rtl' ? '<span dir="ltr" style="unicode-bidi:isolate;">' + q.number + '.</span> ' + esc(cleanP) : q.number + '. ' + esc(cleanP)) + '</div>';
+        if (cleanStim) {
+          block += '<div dir="' + sDir + '" class="' + (hasArabic(cleanStim) ? 'font-arabic' : '') + '" style="text-align:' + sAlign + ';margin:' + (compact ? '4px 14px' : '6px 18px') + ';padding:' + (compact ? '5px 10px' : '8px 14px') + ';border:1px solid #CBD5E1;border-radius:6px;background:#F8FAFC;font-size:' + (hasArabic(cleanStim) ? (compact ? '19px' : '22px') : (compact ? '13px' : '15px')) + ';line-height:' + (hasArabic(cleanStim) ? '1.9' : '1.4') + ';">' + esc(cleanStim) + '</div>';
+        }
+        if (q.svgMarkup) {
+          block += '<div dir="ltr" style="margin:5px 14px;padding:6px;border:1px solid #CBD5E1;border-radius:6px;background:#FFFFFF;text-align:center;">' + q.svgMarkup + (q.visualCaption ? '<div style="font-size:10.5px;color:#475569;margin-top:2px;">' + esc(q.visualCaption) + '</div>' : '') + '</div>';
+        }
+        if (q.type === 'memisah_hijaiyah') {
+          var bx = '';
+          for (var i = 0; i < (q.letterBoxes || 5); i++) bx += '<span style="display:inline-block;width:32px;height:26px;border:1px solid #94A3B8;border-radius:4px;margin-right:5px;"></span>';
+          var hDir = isPureArabic(cleanStim || cleanP) ? 'rtl' : 'ltr';
+          block += '<div dir="' + hDir + '" style="margin:5px 14px;text-align:' + (hDir === 'rtl' ? 'right' : 'left') + ';">' + bx + '</div>';
+        } else if (q.type === 'menyambung_hijaiyah') {
+          var jDir = isPureArabic(cleanStim || cleanP) ? 'rtl' : 'ltr';
+          block += '<div dir="' + jDir + '" style="margin:5px 14px;text-align:' + (jDir === 'rtl' ? 'right' : 'left') + ';"><div style="display:inline-block;height:30px;width:220px;border:1px solid #94A3B8;border-radius:5px;"></div></div>';
+        } else if (q.type === 'menulis_ulang_kalimat') {
+          block += '<div dir="ltr" style="margin:5px 14px;"><div style="border-bottom:1px dotted #94A3B8;height:18px;"></div><div style="border-bottom:1px dotted #94A3B8;height:18px;"></div></div>';
+        } else if (q.options && q.options.length > 0) {
+          block += '<div dir="' + pDir + '" class="' + (useTwoColOpts ? 'opts-2col' : '') + '" style="margin:3px 16px;text-align:' + pAlign + ';">' + q.options.map(function (o) {
+            var oTxt = cleanAsterisks(o.text);
+            var oAr = hasArabic(oTxt);
+            var oPureAr = isPureArabic(oTxt);
+            var oRowRtl = isPureArabic((o.label || '') + ' ' + oTxt) || (pDir === 'rtl' && oPureAr);
+            return '<div dir="' + (oRowRtl ? 'rtl' : 'ltr') + '" class="' + (oAr ? 'font-arabic' : '') + '" style="text-align:' + (oRowRtl ? 'right' : 'left') + ';font-size:' + (oAr ? (compact ? '15px' : '17px') : (compact ? '11.5px' : '13px')) + ';line-height:' + (oAr ? '1.75' : '1.35') + ';"><strong>' + esc(o.label) + '.</strong> ' + (oPureAr && !oRowRtl ? '<span dir="rtl" style="unicode-bidi:isolate;">' + esc(oTxt) + '</span>' : esc(oTxt)) + '</div>';
+          }).join('') + '</div>';
+        } else if (q.matchingPairs && q.matchingPairs.length > 0) {
+          var syncEx = getSynchronizedMatching(q.matchingPairs);
+          var lastExL = (syncEx.rightOptions[syncEx.rightOptions.length - 1] && syncEx.rightOptions[syncEx.rightOptions.length - 1].letter) || 'D';
+          block += '<div dir="ltr" style="margin:5px 14px;font-size:11.5px;text-align:left;">' +
+            '<div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:5px;padding:4px 8px;margin-bottom:6px;font-size:11px;color:#334155;">Pasangkan <strong>Kolom Kiri (1–' + syncEx.rows.length + ')</strong> dengan <strong>Pilihan Kanan (A–' + lastExL + ')</strong>, lalu tuliskan jawaban pada kotak isian yang luas di bawah ini:</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">' +
+              '<div style="border:1px solid #CBD5E1;border-radius:5px;padding:6px;">' +
+                '<div style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:3px;">Kolom Kiri</div>' +
+                syncEx.rows.map(function (r) {
+                  var rPure = isPureArabic(r.left);
+                  return '<div dir="' + (rPure ? 'rtl' : 'ltr') + '" class="' + (hasArabic(r.left) ? 'font-arabic' : '') + '" style="text-align:' + (rPure ? 'right' : 'left') + ';padding:2px 0;border-bottom:1px dotted #E2E8F0;font-size:' + (hasArabic(r.left) ? '15px' : '11.5px') + ';"><strong>' + r.number + '.</strong> ' + esc(r.left) + '</div>';
+                }).join('') +
+              '</div>' +
+              '<div style="border:1px solid #CBD5E1;border-radius:5px;padding:6px;">' +
+                '<div style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:3px;">Pilihan Kanan</div>' +
+                syncEx.rightOptions.map(function (opt) {
+                  var oPure = isPureArabic(opt.text);
+                  return '<div dir="' + (oPure ? 'rtl' : 'ltr') + '" class="' + (hasArabic(opt.text) ? 'font-arabic' : '') + '" style="text-align:' + (oPure ? 'right' : 'left') + ';padding:2px 0;border-bottom:1px dotted #E2E8F0;font-size:' + (hasArabic(opt.text) ? '15px' : '11.5px') + ';"><strong>' + opt.letter + '.</strong> ' + esc(opt.text) + '</div>';
+                }).join('') +
+              '</div>' +
+            '</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
+              syncEx.rows.map(function (r) {
+                return '<div style="border:1.5px solid #94A3B8;border-radius:5px;padding:4px 7px;">' +
+                  '<div style="font-size:10px;font-weight:700;color:#334155;margin-bottom:3px;">Jawaban No. ' + r.number + ':</div>' +
+                  '<div style="min-height:42px;border:1px dashed #CBD5E1;border-radius:4px;"></div>' +
+                '</div>';
+              }).join('') +
+            '</div>' +
+          '</div>';
+        } else if (q.sequenceItems && q.sequenceItems.length > 0) {
+          block += '<div dir="ltr" style="margin:4px 16px;font-size:12px;text-align:left;">' + q.sequenceItems.map(function (item) {
+            var iDir = getDir(item);
+            return '<div dir="' + iDir + '" style="text-align:' + (iDir === 'rtl' ? 'right' : 'left') + ';padding:2px 0;">[ ... ] ' + esc(item) + '</div>';
+          }).join('') + '</div>';
+        }
+        block += '</div>';
+        return block;
+      }).join('');
+    }
+
+    if (showK) {
+      html += '<div class="' + (showQ ? 'print-break' : '') + '" style="' + (showQ ? 'margin-top:16px;border-top:2px solid #CBD5E1;padding-top:12px;' : '') + '">' +
+        '<h3 style="font-size:13.5px;text-transform:uppercase;margin-bottom:8px;">KUNCI JAWABAN &amp; PEMBAHASAN</h3>' +
+        '<div class="' + (compact ? 'keys-2col' : '') + '">' +
+        state.questions.map(function (q) {
+          var cAns = cleanAsterisks(q.correctAnswer);
+          var cExp = cleanAsterisks(q.explanation);
+          var aDir = getDir(cAns);
+          var eDir = getDir(cExp);
+          return '<div class="avoid-break" dir="ltr" style="text-align:left;border:1px solid #E2E8F0;border-radius:6px;padding:' + (compact ? '6px 9px' : '10px 12px') + ';margin-bottom:' + (compact ? '0' : '8px') + ';font-size:' + (compact ? '11px' : '12.5px') + ';line-height:1.35;">' +
+            '<strong>No. ' + q.number + '</strong> (' + q.weight + ' pt) — Kunci: <span dir="' + aDir + '" class="' + (hasArabic(cAns) ? 'font-arabic' : '') + '" style="unicode-bidi:isolate;font-weight:700;font-size:' + (hasArabic(cAns) ? '15px' : '11.5px') + ';">' + esc(cAns) + '</span>' +
+            (cExp ? '<div dir="' + eDir + '" style="text-align:' + (eDir === 'rtl' ? 'right' : 'left') + ';color:#475569;margin-top:2px;">Pembahasan: ' + esc(cExp) + '</div>' : '') +
+          '</div>';
+        }).join('') +
+        '</div>' +
+      '</div>';
+    }
+
+    if (showKisi) {
+      var firstCp = state.questions.length > 0 ? buildKisiKisiRow(state.questions[0]).cp : '';
+      html += '<div class="' + ((showQ || showK) ? 'print-break' : '') + '" style="' + ((showQ || showK) ? 'margin-top:16px;border-top:2px solid #CBD5E1;padding-top:12px;' : '') + '">' +
+        '<div style="text-align:center;margin-bottom:8px;">' +
+          '<h3 style="font-size:13.5px;text-transform:uppercase;">KISI-KISI PENULISAN SOAL (KURIKULUM MERDEKA)</h3>' +
+          '<div style="font-size:11px;color:#475569;">' + esc(s.institutionName) + ' · ' + esc(state.subject) + ' · ' + esc(fase) + ' · Penyusun: ' + esc(s.teacherName) + '</div>' +
+        '</div>' +
+        (firstCp ? '<div style="font-size:10.5px;font-style:italic;color:#1E293B;margin-bottom:6px;"><strong>Capaian Pembelajaran (CP):</strong> ' + esc(firstCp) + '</div>' : '') +
+        '<table class="kisi-table">' +
+          '<thead><tr>' +
+            '<th style="width:28px;text-align:center;">No</th>' +
+            '<th style="width:27%;">TP &amp; Lingkup Materi</th>' +
+            '<th style="width:41%;">Indikator Soal</th>' +
+            '<th style="width:18%;">Level &amp; Bentuk</th>' +
+            '<th style="width:38px;text-align:center;">Bobot</th>' +
+          '</tr></thead>' +
+          '<tbody>' +
+            state.questions.map(function (q) {
+              var kr = buildKisiKisiRow(q);
+              return '<tr>' +
+                '<td style="text-align:center;font-weight:700;">' + kr.number + '</td>' +
+                '<td>' + esc(kr.tp) + '<div style="font-size:10px;color:#475569;font-style:italic;margin-top:2px;">Materi: ' + esc(kr.materi) + '</div></td>' +
+                '<td>' + esc(kr.indikator) + '</td>' +
+                '<td><strong>' + esc(kr.cognitiveLevel) + '</strong> (' + esc(kr.thinkingTier) + ')<div style="font-size:10px;color:#475569;">' + esc(kr.bentukSoal) + '</div></td>' +
+                '<td style="text-align:center;font-weight:700;">' + kr.weight + '</td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>' +
+      '</div>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function renderExport() {
+    var wrap = document.getElementById('export-sheet-wrap');
+    if (state.questions.length === 0) {
+      wrap.innerHTML = '<div class="card" style="text-align:center;padding:40px;">Buat soal terlebih dahulu pada tab <strong>Buat Soal</strong> untuk mencetak atau mengekspor.</div>';
+      return;
+    }
+    var mode = document.getElementById('export-mode').value;
+    wrap.innerHTML = buildExportSheetHtml(mode);
+  }
+
+  function setGenProgress(show, msg, pct) {
+    var box = document.getElementById('gen-progress-box');
+    if (!box) return;
+    box.classList.toggle('hidden', !show);
+    if (msg) document.getElementById('gen-progress-msg').textContent = msg;
+    if (pct !== undefined) {
+      document.getElementById('gen-progress-pct').textContent = pct + '%';
+      document.getElementById('gen-progress-fill').style.width = pct + '%';
+    }
+  }
+
+  function setGenError(html) {
+    var box = document.getElementById('gen-error-box');
+    if (!box) return;
+    box.classList.toggle('hidden', !html);
+    box.innerHTML = html || '';
+  }
+
+  function buildBatches(countsObj, maxPerBatch) {
+    var expanded = [];
+    Object.keys(countsObj || {}).forEach(function (t) {
+      var n = Math.max(0, Math.min(50, Math.floor(Number(countsObj[t] || 0))));
+      for (var i = 0; i < n; i++) expanded.push(t);
+    });
+    var batches = [];
+    for (var i = 0; i < expanded.length; i += (maxPerBatch || 8)) {
+      var slice = expanded.slice(i, i + (maxPerBatch || 8));
+      var map = {};
+      slice.forEach(function (t) { map[t] = (map[t] || 0) + 1; });
+      batches.push(map);
+    }
+    return batches;
+  }
+
+  async function callGasApi(action, payload, timeoutMs) {
+    var url = (state.settings.aiEndpoint || '').trim();
+    if (!url || !/^https?:\/\//i.test(url)) {
+      throw new Error('URL Web App Google Apps Script belum diisi. Tempel URL deployment (.../exec) pada kolom di atas atau di tab Kop & Koneksi.');
+    }
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, timeoutMs || 90000);
+    try {
+      var resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        redirect: 'follow',
+        body: JSON.stringify({ action: action, payload: payload || {} }),
+        signal: controller.signal
+      });
+      var raw = await resp.text();
+      var json;
+      try {
+        json = JSON.parse(raw);
+      } catch (parseErr) {
+        throw new Error('Respons GAS bukan JSON valid. Pastikan Deployment Web App diatur Access = "Anyone" dan URL diakhiri /exec.');
+      }
+      if (!json.ok) {
+        throw new Error((json.error && json.error.message) || 'GAS mengembalikan error.');
+      }
+      return json.data;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function mapRemoteQuestion(q, idx) {
+    var cleanPrompt = cleanAsterisks(q.prompt || '');
+    var rawStim = q.stimulus || q.arabicPrompt || q.readingPassage || '';
+    var stimulus = cleanAsterisks(rawStim);
+    var wordCountLabel = cleanAsterisks(q.wordCountLabel || '');
+    if (!wordCountLabel && q.type === 'menulis_ulang_kalimat' && stimulus) {
+      var wc = String(stimulus).trim().split(/\s+/).filter(Boolean).length;
+      if (wc > 0) wordCountLabel = wc + ' Kata';
+    }
+    var letterBoxes = q.letterBoxes || 5;
+    if (q.type === 'memisah_hijaiyah' && stimulus) {
+      var lettersOnly = String(stimulus).replace(/[\u064B-\u065F\u0670\u0640\s\-]/g, '');
+      if (lettersOnly.length > 0) letterBoxes = Math.max(3, Math.min(10, lettersOnly.length));
+    }
+    var cleanedOpts = Array.isArray(q.options)
+      ? q.options.map(function (o) {
+          return Object.assign({}, o, {
+            label: cleanAsterisks(o.label || ''),
+            text: cleanAsterisks(o.text || ''),
+            distractorReason: o.distractorReason ? cleanAsterisks(o.distractorReason) : o.distractorReason
+          });
+        })
+      : q.options;
+    var cleanedPairs = Array.isArray(q.matchingPairs)
+      ? q.matchingPairs.map(function (p) {
+          return Object.assign({}, p, {
+            left: cleanAsterisks(p.left || ''),
+            right: cleanAsterisks(p.right || '')
+          });
+        })
+      : q.matchingPairs;
+    var cleanedSeq = Array.isArray(q.sequenceItems)
+      ? q.sequenceItems.map(cleanAsterisks)
+      : q.sequenceItems;
+
+    return Object.assign({}, q, {
+      number: q.number || (idx + 1),
+      isRTL: isPureArabic(stimulus || cleanPrompt),
+      prompt: cleanPrompt,
+      arabicPrompt: cleanAsterisks(q.arabicPrompt || ''),
+      readingPassage: cleanAsterisks(q.readingPassage || ''),
+      readingTranslation: cleanAsterisks(q.readingTranslation || ''),
+      stimulus: stimulus,
+      stimulusSub: cleanAsterisks(q.stimulusSub || q.readingTranslation || ''),
+      correctAnswer: cleanAsterisks(q.correctAnswer || ''),
+      explanation: cleanAsterisks(q.explanation || ''),
+      rubric: cleanAsterisks(q.rubric || ''),
+      topicTag: cleanAsterisks(q.topicTag || ''),
+      capaianPembelajaran: cleanAsterisks(q.capaianPembelajaran || ''),
+      tujuanPembelajaran: cleanAsterisks(q.tujuanPembelajaran || ''),
+      indikatorSoal: cleanAsterisks(q.indikatorSoal || ''),
+      options: cleanedOpts,
+      matchingPairs: cleanedPairs,
+      sequenceItems: cleanedSeq,
+      letterBoxes: letterBoxes,
+      wordCountLabel: wordCountLabel,
+      svgMarkup: (q.visual && q.visual.svgMarkup) || q.svgMarkup || '',
+      visualCaption: cleanAsterisks((q.visual && q.visual.caption) || q.visualCaption || '')
+    });
+  }
+
+  function renderRpp() {
+    var wrap = document.getElementById('rpp-container');
+    if (!wrap) return;
+    if (!state.rpp) state.rpp = getDefaultRpp();
+    var r = state.rpp;
+    var mode = state.rppViewMode || 'preview';
+
+    var formPanel = '<div class="card no-print" style="margin-bottom:18px;">' +
+      '<div class="section-head"><h2 class="section-title">Identitas &amp; Parameter Modul Ajar / RPP (Kurikulum Merdeka)</h2>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<button type="button" class="btn btn-sm ' + (mode === 'preview' ? '' : 'btn-sec') + '" onclick="App.setRppMode(\'preview\')">Preview &amp; Cetak A4</button>' +
+          '<button type="button" class="btn btn-sm ' + (mode === 'edit' ? '' : 'btn-sec') + '" onclick="App.setRppMode(\'edit\')">Mode Edit RPP</button>' +
+          '<button type="button" class="btn btn-sec btn-sm" onclick="window.print()">Cetak PDF</button>' +
+          '<button type="button" class="btn btn-emerald-soft btn-sm" onclick="App.downloadRppWord()">Download Word (.doc)</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="row-2 field">' +
+        '<div><label class="label">Topik / Materi Utama</label><input class="input" value="' + esc(r.topic) + '" onchange="App.updateRppField(\'topic\', this.value)" /></div>' +
+        '<div><label class="label">Mata Pelajaran</label><input class="input" value="' + esc(r.subject) + '" onchange="App.updateRppField(\'subject\', this.value)" /></div>' +
+      '</div>' +
+      '<div class="row-2 field">' +
+        '<div><label class="label">Jenjang / Kelas / Fase</label><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">' +
+          '<input class="input" value="' + esc(r.level) + '" placeholder="Jenjang" onchange="App.updateRppField(\'level\', this.value)" />' +
+          '<input class="input" value="' + esc(r.gradeClass) + '" placeholder="Kelas" onchange="App.updateRppField(\'gradeClass\', this.value)" />' +
+          '<input class="input" value="' + esc(r.fase) + '" placeholder="Fase A-F" onchange="App.updateRppField(\'fase\', this.value)" />' +
+        '</div></div>' +
+        '<div><label class="label">Alokasi Waktu &amp; Jumlah Pertemuan</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
+          '<input class="input" value="' + esc(r.alokasiWaktu) + '" placeholder="2 x 35 Menit" onchange="App.updateRppField(\'alokasiWaktu\', this.value)" />' +
+          '<input class="input" value="' + esc(r.jumlahPertemuan) + '" placeholder="1 Pertemuan" onchange="App.updateRppField(\'jumlahPertemuan\', this.value)" />' +
+        '</div></div>' +
+      '</div>' +
+      '<div class="row-2 field">' +
+        '<div><label class="label">Model Pembelajaran</label><input class="input" value="' + esc(r.modelPembelajaran) + '" onchange="App.updateRppField(\'modelPembelajaran\', this.value)" /></div>' +
+        '<div><label class="label">Subtopik (Pisahkan dengan koma)</label><input class="input" value="' + esc((r.subtopics || []).join(', ')) + '" onchange="App.updateRppField(\'subtopics\', this.value)" /></div>' +
+      '</div>' +
+      '<div class="row-2 field">' +
+        '<div><label class="label">Kepala Sekolah (Tanda Tangan)</label><input class="input" value="' + esc(r.principalName) + '" onchange="App.updateRppField(\'principalName\', this.value)" /></div>' +
+        '<div><label class="label">Semester &amp; Tahun Ajaran</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
+          '<input class="input" value="' + esc(r.semester) + '" onchange="App.updateRppField(\'semester\', this.value)" />' +
+          '<input class="input" value="' + esc(r.academicYear) + '" onchange="App.updateRppField(\'academicYear\', this.value)" />' +
+        '</div></div>' +
+      '</div>' +
+    '</div>';
+
+    if (mode === 'edit') {
+      var kp = r.kegiatanPembelajaran || { pendahuluan: {}, inti: {}, penutup: {} };
+      var as = r.asesmen || {};
+      var pr = r.pengayaanRemedial || {};
+      var rf = r.refleksi || {};
+      wrap.innerHTML = formPanel +
+        '<div class="card">' +
+          '<h3 style="font-size:15px;margin-bottom:12px;">Editor Lengkap Modul Ajar Kurikulum Merdeka</h3>' +
+          '<div class="field"><label class="label">Kompetensi Awal</label><textarea class="textarea" onchange="App.updateRppField(\'kompetensiAwal\', this.value)">' + esc(r.kompetensiAwal) + '</textarea></div>' +
+          '<div class="field"><label class="label">Dimensi Profil Pelajar Pancasila (1 baris per dimensi)</label><textarea class="textarea" onchange="App.updateRppField(\'profilPelajarPancasila\', this.value)">' + esc((r.profilPelajarPancasila || []).join('\n')) + '</textarea></div>' +
+          '<div class="field"><label class="label">Sarana &amp; Prasarana</label><textarea class="textarea" onchange="App.updateRppField(\'saranaPrasarana\', this.value)">' + esc(r.saranaPrasarana) + '</textarea></div>' +
+          '<div class="field"><label class="label">Capaian Pembelajaran (CP)</label><textarea class="textarea" onchange="App.updateRppField(\'capaianPembelajaran\', this.value)">' + esc(r.capaianPembelajaran) + '</textarea></div>' +
+          '<div class="field"><label class="label">Tujuan Pembelajaran (TP — 1 baris per butir)</label><textarea class="textarea" onchange="App.updateRppField(\'tujuanPembelajaran\', this.value)">' + esc((r.tujuanPembelajaran || []).join('\n')) + '</textarea></div>' +
+          '<div class="field"><label class="label">Pemahaman Bermakna</label><textarea class="textarea" onchange="App.updateRppField(\'pemahamanBermakna\', this.value)">' + esc(r.pemahamanBermakna) + '</textarea></div>' +
+          '<div class="field"><label class="label">Pertanyaan Pemantik (1 baris per pertanyaan)</label><textarea class="textarea" onchange="App.updateRppField(\'pertanyaanPemantik\', this.value)">' + esc((r.pertanyaanPemantik || []).join('\n')) + '</textarea></div>' +
+          '<div class="row-2 field">' +
+            '<div><label class="label">Kegiatan Pendahuluan (' + esc((kp.pendahuluan && kp.pendahuluan.durasi) || '10 Menit') + ')</label><textarea class="textarea" onchange="App.updateRppField(\'kegiatan.pendahuluan\', this.value)">' + esc(((kp.pendahuluan && kp.pendahuluan.langkah) || []).join('\n')) + '</textarea></div>' +
+            '<div><label class="label">Kegiatan Inti (' + esc((kp.inti && kp.inti.durasi) || '50 Menit') + ')</label><textarea class="textarea" onchange="App.updateRppField(\'kegiatan.inti\', this.value)">' + esc(((kp.inti && kp.inti.langkah) || []).join('\n')) + '</textarea></div>' +
+          '</div>' +
+          '<div class="field"><label class="label">Kegiatan Penutup (' + esc((kp.penutup && kp.penutup.durasi) || '10 Menit') + ')</label><textarea class="textarea" onchange="App.updateRppField(\'kegiatan.penutup\', this.value)">' + esc(((kp.penutup && kp.penutup.langkah) || []).join('\n')) + '</textarea></div>' +
+          '<div class="row-2 field">' +
+            '<div><label class="label">Asesmen Diagnostik</label><textarea class="textarea" onchange="App.updateRppField(\'asesmen.diagnostik\', this.value)">' + esc(as.diagnostik) + '</textarea></div>' +
+            '<div><label class="label">Asesmen Formatif</label><textarea class="textarea" onchange="App.updateRppField(\'asesmen.formatif\', this.value)">' + esc(as.formatif) + '</textarea></div>' +
+          '</div>' +
+          '<div class="field"><label class="label">Asesmen Sumatif</label><textarea class="textarea" onchange="App.updateRppField(\'asesmen.sumatif\', this.value)">' + esc(as.sumatif) + '</textarea></div>' +
+          '<div class="row-2 field">' +
+            '<div><label class="label">Pengayaan</label><textarea class="textarea" onchange="App.updateRppField(\'pengayaanRemedial.pengayaan\', this.value)">' + esc(pr.pengayaan) + '</textarea></div>' +
+            '<div><label class="label">Remedial</label><textarea class="textarea" onchange="App.updateRppField(\'pengayaanRemedial.remedial\', this.value)">' + esc(pr.remedial) + '</textarea></div>' +
+          '</div>' +
+          '<div class="row-2 field">' +
+            '<div><label class="label">Refleksi Pendidik</label><textarea class="textarea" onchange="App.updateRppField(\'refleksi.pendidik\', this.value)">' + esc(rf.pendidik) + '</textarea></div>' +
+            '<div><label class="label">Refleksi Peserta Didik</label><textarea class="textarea" onchange="App.updateRppField(\'refleksi.pesertaDidik\', this.value)">' + esc(rf.pesertaDidik) + '</textarea></div>' +
+          '</div>' +
+          '<div class="field"><label class="label">Daftar Pustaka</label><textarea class="textarea" onchange="App.updateRppField(\'daftarPustaka\', this.value)">' + esc(r.daftarPustaka) + '</textarea></div>' +
+        '</div>';
+      return;
+    }
+
+    wrap.innerHTML = formPanel + buildRppSheetHtml(r);
+  }
+
+  function buildRppSheetHtml(r) {
+    var kp = r.kegiatanPembelajaran || { pendahuluan: {}, inti: {}, penutup: {} };
+    var as = r.asesmen || {};
+    var pr = r.pengayaanRemedial || {};
+    var rf = r.refleksi || {};
+    function renderSteps(arr) {
+      return '<ol style="margin:3px 0 0;padding-left:18px;">' + (arr || []).map(function (st) {
+        var sDir = getDir(st);
+        return '<li dir="' + sDir + '" style="text-align:' + (sDir === 'rtl' ? 'right' : 'left') + ';margin-bottom:2px;">' + esc(st) + '</li>';
+      }).join('') + '</ol>';
+    }
+    return '<div class="print-sheet compact" dir="ltr" style="text-align:left;">' +
+      '<div class="kop">' +
+        '<div style="font-size:15px;font-weight:800;text-transform:uppercase;color:#0F294A;">' + esc(r.institutionName) + '</div>' +
+        '<div style="font-size:11px;color:#475569;">' + esc(r.institutionAddress) + '</div>' +
+      '</div>' +
+      '<div style="text-align:center;margin-bottom:8px;">' +
+        '<div style="font-size:13.5px;font-weight:800;text-transform:uppercase;color:#0F294A;">MODUL AJAR / RPP KURIKULUM MERDEKA</div>' +
+        '<div style="font-size:12px;font-weight:600;color:#334155;">' + esc(r.subject) + ' — ' + esc(r.topic) + '</div>' +
+      '</div>' +
+      '<table class="sheet-table"><tbody>' +
+        '<tr><td><strong>Penyusun:</strong> ' + esc(r.teacherName) + '</td><td><strong>Jenjang / Kelas / Fase:</strong> ' + esc(r.level) + ' · ' + esc(r.gradeClass) + ' (' + esc(r.fase) + ')</td></tr>' +
+        '<tr><td><strong>Satuan Pendidikan:</strong> ' + esc(r.institutionName) + '</td><td><strong>Semester / Tahun:</strong> ' + esc(r.semester) + ' / ' + esc(r.academicYear) + '</td></tr>' +
+        '<tr><td><strong>Alokasi Waktu:</strong> ' + esc(r.alokasiWaktu) + ' (' + esc(r.jumlahPertemuan) + ')</td><td><strong>Model Pembelajaran:</strong> ' + esc(r.modelPembelajaran) + '</td></tr>' +
+        '<tr><td colspan="2"><strong>Target Peserta Didik:</strong> ' + esc(r.targetPesertaDidik) + '</td></tr>' +
+      '</tbody></table>' +
+      '<div class="rpp-section-box avoid-break">' +
+        '<div class="rpp-section-title">A. Informasi Umum, Kompetensi Awal, P5 &amp; Sarana Prasarana</div>' +
+        '<div><strong>Kompetensi Awal:</strong> ' + esc(r.kompetensiAwal) + '</div>' +
+        '<div style="margin-top:4px;"><strong>Dimensi Profil Pelajar Pancasila (P5):</strong> ' + (r.profilPelajarPancasila || []).map(esc).join(' · ') + '</div>' +
+        '<div style="margin-top:4px;"><strong>Sarana &amp; Prasarana:</strong> ' + esc(r.saranaPrasarana) + '</div>' +
+      '</div>' +
+      '<div class="rpp-section-box avoid-break">' +
+        '<div class="rpp-section-title">B. Komponen Inti (CP, TP, Pemahaman Bermakna &amp; Pertanyaan Pemantik)</div>' +
+        '<div><strong>Capaian Pembelajaran (CP):</strong> ' + esc(r.capaianPembelajaran) + '</div>' +
+        '<div style="margin-top:4px;"><strong>Tujuan Pembelajaran (TP):</strong>' + renderSteps(r.tujuanPembelajaran) + '</div>' +
+        '<div style="margin-top:4px;"><strong>Pemahaman Bermakna:</strong> ' + esc(r.pemahamanBermakna) + '</div>' +
+        '<div style="margin-top:4px;"><strong>Pertanyaan Pemantik:</strong>' + renderSteps(r.pertanyaanPemantik) + '</div>' +
+      '</div>' +
+      '<div class="rpp-section-box">' +
+        '<div class="rpp-section-title">C. Langkah-Langkah Kegiatan Pembelajaran</div>' +
+        '<table class="kisi-table">' +
+          '<thead><tr><th style="width:18%;">Tahap &amp; Durasi</th><th>Aktivitas Pembelajaran (Guru &amp; Peserta Didik)</th></tr></thead>' +
+          '<tbody>' +
+            '<tr><td><strong>1. Pendahuluan</strong><div style="font-size:10px;color:#475569;">' + esc((kp.pendahuluan && kp.pendahuluan.durasi) || '10 Menit') + '</div></td><td>' + renderSteps(kp.pendahuluan && kp.pendahuluan.langkah) + '</td></tr>' +
+            '<tr><td><strong>2. Kegiatan Inti</strong><div style="font-size:10px;color:#475569;">' + esc((kp.inti && kp.inti.durasi) || '50 Menit') + '</div></td><td>' + renderSteps(kp.inti && kp.inti.langkah) + '</td></tr>' +
+            '<tr><td><strong>3. Penutup</strong><div style="font-size:10px;color:#475569;">' + esc((kp.penutup && kp.penutup.durasi) || '10 Menit') + '</div></td><td>' + renderSteps(kp.penutup && kp.penutup.langkah) + '</td></tr>' +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
+      '<div class="rpp-section-box avoid-break">' +
+        '<div class="rpp-section-title">D. Asesmen, Pengayaan &amp; Remedial, serta Refleksi</div>' +
+        '<div><strong>Asesmen Diagnostik:</strong> ' + esc(as.diagnostik) + '</div>' +
+        '<div style="margin-top:3px;"><strong>Asesmen Formatif:</strong> ' + esc(as.formatif) + '</div>' +
+        '<div style="margin-top:3px;"><strong>Asesmen Sumatif:</strong> ' + esc(as.sumatif) + '</div>' +
+        '<div style="margin-top:4px;"><strong>Pengayaan:</strong> ' + esc(pr.pengayaan) + '</div>' +
+        '<div style="margin-top:3px;"><strong>Remedial:</strong> ' + esc(pr.remedial) + '</div>' +
+        '<div style="margin-top:4px;"><strong>Refleksi Pendidik:</strong> ' + esc(rf.pendidik) + '</div>' +
+        '<div style="margin-top:3px;"><strong>Refleksi Peserta Didik:</strong> ' + esc(rf.pesertaDidik) + '</div>' +
+      '</div>' +
+      '<div class="rpp-section-box avoid-break">' +
+        '<div class="rpp-section-title">E. Lampiran: Glosarium &amp; Daftar Pustaka</div>' +
+        (r.glosarium && r.glosarium.length ? '<div><strong>Glosarium:</strong> ' + r.glosarium.map(function (g) { return '<em>' + esc(g.term) + '</em>: ' + esc(g.definition); }).join('; ') + '</div>' : '') +
+        '<div style="margin-top:3px;"><strong>Daftar Pustaka:</strong> ' + esc(r.daftarPustaka) + '</div>' +
+      '</div>' +
+      '<div class="avoid-break" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:14px;font-size:11.5px;text-align:center;">' +
+        '<div>Mengetahui,<br/>Kepala Sekolah<div style="height:46px;"></div><strong><u>' + esc(r.principalName || 'Kepala Sekolah') + '</u></strong><div style="font-size:10.5px;color:#475569;">NIP/NIY: ' + esc(r.principalNip || '-') + '</div></div>' +
+        '<div>Guru Mata Pelajaran,<br/>Penyusun Modul Ajar<div style="height:46px;"></div><strong><u>' + esc(r.teacherName) + '</u></strong><div style="font-size:10.5px;color:#475569;">NIP/NIY: ' + esc(r.teacherNip || '-') + '</div></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  window.App = {
+    setTab: function (tab) {
+      state.tab = tab;
+      saveState();
+      ['generator', 'editor', 'kisi', 'rpp', 'export', 'settings'].forEach(function (t) {
+        var el = document.getElementById('view-' + t);
+        if (el) el.classList.toggle('hidden', t !== tab);
+        var btn = document.querySelector('.tab-btn[data-tab="' + t + '"]');
+        if (btn) btn.classList.toggle('active', t === tab);
+      });
+      if (tab === 'editor') renderEditor();
+      if (tab === 'kisi') renderKisiKisi();
+      if (tab === 'rpp') renderRpp();
+      if (tab === 'export') renderExport();
+    },
+    goToExportKisiKisi: function () {
+      var sel = document.getElementById('export-mode');
+      if (sel) sel.value = 'kisi_kisi_only';
+      this.setTab('export');
+    },
+    toggleExportPref: function () {
+      var cmp = document.getElementById('chk-compact-print');
+      var inc = document.getElementById('chk-include-kisi');
+      if (cmp) state.compactPrint = cmp.checked;
+      if (inc) state.includeKisiKisi = inc.checked;
+      saveState();
+      renderExport();
+    },
+    setAiMode: function (mode) {
+      state.settings.aiMode = mode;
+      if (mode === 'server' && (!state.settings.aiEndpoint || state.settings.aiEndpoint.indexOf('script.google.com') !== -1)) {
+        state.settings.aiEndpoint = '/api/ai/generate-stream';
+      } else if (mode === 'gas' && (!state.settings.aiEndpoint || state.settings.aiEndpoint === '/api/ai/generate-stream')) {
+        state.settings.aiEndpoint = DEFAULT_GAS_URL;
+      }
+      saveState();
+      syncInputsFromState();
+    },
+    saveQuickGasUrl: function (val) {
+      state.settings.aiMode = 'gas';
+      state.settings.aiEndpoint = String(val || '').trim();
+      saveState();
+      syncInputsFromState();
+    },
+    testConnection: async function () {
+      if (state.tab === 'settings') {
+        state.settings.aiMode = document.getElementById('ai-mode').value;
+        state.settings.aiEndpoint = document.getElementById('ai-endpoint').value.trim();
+        saveState();
+        syncInputsFromState();
+      }
+      var mode = state.settings.aiMode;
+      if (mode === 'offline') {
+        updateConnectionUi('Mode Offline Lokal', 'warn', 'Mesin lokal aktif tanpa panggilan API eksternal.');
+        toast('Mode Offline', 'Mesin pembuat soal lokal aktif.');
+        return;
+      }
+      if (mode === 'server') {
+        updateConnectionUi('Menguji Server...', 'warn', 'Menghubungi endpoint Server AI Studio...');
+        try {
+          var r = await fetch('/api/health');
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          updateConnectionUi('Terhubung · Server AI Studio', 'ok', 'Siap membuat soal live melalui Google AI Studio Gemini API.');
+          toast('Koneksi Server Berhasil', 'Server AI Studio siap membuat soal live.');
+        } catch (err) {
+          updateConnectionUi('Server Tidak Terjangkau', 'err', err.message);
+          toast('Koneksi Server Gagal', err.message);
+        }
+        return;
+      }
+
+      updateConnectionUi('Menghubungi GAS...', 'warn', 'Memeriksa Web App Google Apps Script & Google AI Studio...');
+      try {
+        var data = await callGasApi('standalone_health', {}, 25000);
+        var pc = data.publicConfig || {};
+        if (data.standaloneReady) {
+          updateConnectionUi(
+            'Terhubung GAS · ' + (pc.activeModel || 'gemini-4-hydrogen'),
+            'ok',
+            'GAS Web App terhubung dengan Google AI Studio (GEMINI_API_KEY aktif).'
+          );
+          toast('GAS Terhubung Live!', 'Model aktif: ' + (pc.activeModel || 'gemini-4-hydrogen') + '. Siap membuat soal live.');
+        } else {
+          var msg = (data.errors && data.errors[0]) || 'GEMINI_API_KEY belum diisi di Script Properties GAS.';
+          updateConnectionUi('GAS Terhubung · API Key Belum Diisi', 'err', msg);
+          toast('Perlu GEMINI_API_KEY di GAS', msg);
+        }
+      } catch (err) {
+        updateConnectionUi('Koneksi GAS Gagal', 'err', err.message);
+        toast('Koneksi GAS Gagal', err.message);
+      }
+    },
+    addSubtitle: function () {
+      var el = document.getElementById('inp-sub-draft');
+      if (!el.value.trim()) return;
+      state.subtitles.push(el.value.trim());
+      el.value = '';
+      saveState();
+      renderSubtitles();
+    },
+    removeSubtitle: function (idx) {
+      state.subtitles.splice(idx, 1);
+      saveState();
+      renderSubtitles();
+    },
+    toggleBloom: function (c) {
+      var idx = state.cognitiveLevels.indexOf(c);
+      if (idx !== -1 && state.cognitiveLevels.length > 1) state.cognitiveLevels.splice(idx, 1);
+      else if (idx === -1) state.cognitiveLevels.push(c);
+      saveState();
+      renderBloom();
+    },
+    setCount: function (id, val) {
+      state.counts[id] = Math.max(0, Math.min(50, Math.floor(Number(val) || 0)));
+      saveState();
+      renderTypesGrid();
+    },
+    setOptionCount: function (cnt) {
+      var n = Number(cnt);
+      state.optionCount = n === 3 ? 3 : n === 4 ? 4 : 5;
+      saveState();
+      renderOptionCountPills();
+      renderTypesGrid();
+    },
+    onLevelChange: function (lvl) {
+      state.level = lvl;
+      state.gradeClass = DEFAULT_GRADE[lvl] || 'Kelas 8';
+      state.settings.gradeClass = state.gradeClass;
+      state.optionCount = getSuggestedOptCount(lvl, state.gradeClass);
+      saveState();
+      syncInputsFromState();
+      renderTypesGrid();
+    },
+    onGradeSelectChange: function (val) {
+      if (val && val !== '__custom__') {
+        state.gradeClass = val;
+        state.settings.gradeClass = val;
+        state.optionCount = getSuggestedOptCount(state.level, val);
+        saveState();
+        syncInputsFromState();
+        renderTypesGrid();
+      }
+    },
+    onGradeCustomChange: function (val) {
+      state.gradeClass = String(val || '').trim();
+      state.settings.gradeClass = state.gradeClass;
+      saveState();
+      renderGradeSelectOptions();
+    },
+    setWordMode: function (mode, count) {
+      state.rewriteWordMode = mode;
+      state.rewriteWordCount = Math.max(1, Math.min(20, Math.floor(Number(count) || 1)));
+      saveState();
+      renderTypesGrid();
+    },
+    applyPreset: function (preset) {
+      Object.keys(state.counts).forEach(function (k) { state.counts[k] = 0; });
+      if (preset === 'standard') {
+        state.counts.pilihan_ganda = 10;
+        state.counts.benar_salah = 3;
+        state.counts.esai = 2;
+      } else if (preset === 'hijaiyah') {
+        state.subject = 'Bahasa Arab';
+        state.language = 'Bilingual (Arab-Indonesia)';
+        state.title = 'الأَدَوَاتُ الْمَدْرَسِيَّةُ (Latihan Hijaiyah, Kitabah & Mewarnai Arab)';
+        state.counts.memisah_hijaiyah = 4;
+        state.counts.menyambung_hijaiyah = 4;
+        state.counts.menulis_ulang_kalimat = 4;
+        state.counts.menebalkan_mewarnai_arab = 2;
+        state.rewriteWordMode = 'progressive';
+        state.rewriteWordCount = 3;
+        syncInputsFromState();
+      }
+      saveState();
+      renderTypesGrid();
+      toast('Preset Diterapkan', preset === 'hijaiyah' ? 'Komposisi Pisah & Sambung Hijaiyah, Tulis Ulang & Menebalkan-Mewarnai Arab A4 aktif.' : 'Komposisi jumlah soal diperbarui.');
+    },
+    generate: async function () {
+      readInputsToState();
+      setGenError('');
+      var btn = document.getElementById('btn-generate');
+      var totalWanted = Object.keys(state.counts).reduce(function (s, k) { return s + (state.counts[k] || 0); }, 0);
+      if (totalWanted <= 0) {
+        toast('Pilih Jumlah Soal', 'Tentukan minimal 1 butir soal terlebih dahulu.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Menyusun Soal Live...';
+      try {
+        if (state.settings.aiMode === 'gas') {
+          var batches = buildBatches(state.counts, 15);
+          var subs = state.subtitles.length ? state.subtitles : [state.title];
+          var totalBatches = batches.length;
+          var batchResults = new Array(totalBatches);
+          var doneCount = 0;
+          var CONCURRENCY = 2;
+
+          for (var chunkStart = 0; chunkStart < totalBatches; chunkStart += CONCURRENCY) {
+            var chunkEnd = Math.min(totalBatches, chunkStart + CONCURRENCY);
+            setGenProgress(
+              true,
+              'Menyusun soal cepat paralel (Batch ' + (chunkStart + 1) + '–' + chunkEnd + ' dari ' + totalBatches + ') via GAS & AI Studio...',
+              Math.round((doneCount / totalBatches) * 85) + 10
+            );
+            var promises = [];
+            for (var bIdx = chunkStart; bIdx < chunkEnd; bIdx++) {
+              (function (batchIndex) {
+                var focusSubs = subs.length > 1
+                  ? [subs[batchIndex % subs.length]].concat(subs.filter(function (_, si) { return si !== batchIndex % subs.length; }))
+                  : subs;
+                var p = callGasApi('standalone_generate', {
+                  title: state.title,
+                  subtitles: focusSubs,
+                  customWordsText: state.customWordsText,
+                  level: state.level,
+                  grade: state.gradeClass,
+                  gradeClass: state.gradeClass,
+                  subject: state.subject,
+                  language: state.language,
+                  optionCount: Number(state.optionCount || 5),
+                  counts: batches[batchIndex],
+                  difficulty: state.difficulty,
+                  cognitiveLevels: state.cognitiveLevels,
+                  thinkingTier: state.thinkingTier,
+                  harakatMode: state.harakatMode,
+                  shuffleOptions: state.shuffleOptions,
+                  rewriteWordMode: state.rewriteWordMode,
+                  rewriteWordCount: state.rewriteWordCount,
+                  startNumber: batchIndex * 15 + 1,
+                  existingPrompts: []
+                }, 120000).then(function (res) {
+                  doneCount++;
+                  setGenProgress(
+                    true,
+                    'Selesai ' + doneCount + ' dari ' + totalBatches + ' batch...',
+                    Math.min(95, Math.round((doneCount / totalBatches) * 88) + 10)
+                  );
+                  batchResults[batchIndex] = res.questions || [];
+                });
+                promises.push(p);
+              })(bIdx);
+            }
+            await Promise.all(promises);
+          }
+
+          var collected = [];
+          batchResults.forEach(function (arr) {
+            (arr || []).forEach(function (q) {
+              collected.push(mapRemoteQuestion(q, collected.length));
+            });
+          });
+
+          if (state.shuffleQuestions && collected.length > 1) {
+            for (var s = collected.length - 1; s > 0; s--) {
+              var sw = Math.floor(Math.random() * (s + 1));
+              var tmp = collected[s]; collected[s] = collected[sw]; collected[sw] = tmp;
+            }
+          }
+          collected.forEach(function (q, idx) { q.number = idx + 1; });
+          state.questions = collected;
+          setGenProgress(true, 'Selesai via GAS + Google AI Studio!', 100);
+          updateConnectionUi('Terhubung GAS · Live Sukses', 'ok', state.questions.length + ' soal baru saja dibuat live via GAS & Gemini.');
+        } else if (state.settings.aiMode === 'server') {
+          var endpoint = (state.settings.aiEndpoint || '/api/ai/generate-stream').trim();
+          setGenProgress(true, 'Menghubungi Server Google AI Studio...', 12);
+          var resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: state.title,
+              subtitles: state.subtitles.length ? state.subtitles : [state.title],
+              description: state.customWordsText,
+              level: state.level,
+              gradeClass: state.gradeClass,
+              subject: state.subject,
+              language: state.language,
+              optionCount: Number(state.optionCount || 5),
+              questionCounts: state.counts,
+              difficulty: state.difficulty,
+              cognitiveLevels: state.cognitiveLevels,
+              thinkingTier: state.thinkingTier,
+              depth: 'Menengah',
+              tone: 'Formal',
+              shuffleQuestions: state.shuffleQuestions,
+              shuffleOptions: state.shuffleOptions,
+              enableVisuals: true,
+              arabicFocus: 'Umum Bahasa Arab',
+              harakatMode: state.harakatMode,
+              rewriteWordMode: state.rewriteWordMode,
+              rewriteWordCount: state.rewriteWordCount
+            })
+          });
+          if (!resp.ok) throw new Error('Server mengembalikan HTTP ' + resp.status);
+          var reader = resp.body.getReader();
+          var decoder = new TextDecoder();
+          var buf = '';
+          var completeData = null;
+          while (true) {
+            var chunk = await reader.read();
+            if (chunk.done) break;
+            buf += decoder.decode(chunk.value, { stream: true });
+            var blocks = buf.split('\n\n');
+            buf = blocks.pop() || '';
+            for (var bi = 0; bi < blocks.length; bi++) {
+              var block = blocks[bi];
+              var evMatch = block.match(/event:\s*(\S+)/);
+              var dataMatch = block.match(/data:\s*([\s\S]+)/);
+              if (!evMatch || !dataMatch) continue;
+              var evName = evMatch[1];
+              var evPayload = JSON.parse(dataMatch[1]);
+              if (evName === 'progress') {
+                setGenProgress(true, evPayload.message || 'Menyusun soal...', evPayload.percent || 45);
+              } else if (evName === 'error') {
+                throw new Error(evPayload.message || 'Gagal memproses di Server AI Studio.');
+              } else if (evName === 'complete') {
+                completeData = evPayload;
+              }
+            }
+          }
+          if (!completeData || !Array.isArray(completeData.questions)) {
+            throw new Error('Server AI Studio tidak mengembalikan hasil lengkap.');
+          }
+          state.questions = completeData.questions.map(mapRemoteQuestion);
+        } else {
+          setGenProgress(true, 'Menyusun soal di Mode Offline Lokal...', 100);
+          state.questions = generateOfflineQuestions();
+        }
+
+        saveState();
+        renderTypesGrid();
+        setTimeout(function () { setGenProgress(false); }, 600);
+        this.setTab('editor');
+        toast('Berhasil Live!', state.questions.length + ' butir soal siap digunakan.');
+      } catch (err) {
+        setGenProgress(false);
+        setGenError(
+          '<strong>Gagal Membuat Soal Live:</strong> ' + esc(err.message) +
+          '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<button type="button" class="btn btn-sec btn-sm" onclick="App.setTab(\'settings\')">Periksa Pengaturan Koneksi</button>' +
+            '<button type="button" class="btn btn-sec btn-sm" onclick="App.setAiMode(\'offline\');App.generate();">Gunakan Mode Offline Lokal</button>' +
+          '</div>'
+        );
+        toast('Gagal Membuat Soal Live', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'BUAT SOAL LIVE SEKARANG';
+      }
+    },
+    regenerateQ: async function (idx) {
+      var q = state.questions[idx];
+      if (!q) return;
+      toast('Membuat Ulang Soal #' + q.number, 'Menghubungi Google AI Studio...');
+      try {
+        var configObj = {
+          title: state.title,
+          subtitles: state.subtitles.length ? state.subtitles : [state.title],
+          subject: state.subject,
+          level: state.level,
+          grade: state.gradeClass,
+          gradeClass: state.gradeClass,
+          optionCount: Number(state.optionCount || 5),
+          language: state.language,
+          difficulty: state.difficulty,
+          harakatMode: state.harakatMode
+        };
+        var otherPrompts = state.questions.filter(function (_, i) { return i !== idx; }).map(function (x) { return x.prompt; });
+        var replaced = null;
+        if (state.settings.aiMode === 'gas') {
+          var res = await callGasApi('standalone_regenerate', {
+            config: configObj,
+            existingQuestion: q,
+            otherPrompts: otherPrompts
+          }, 60000);
+          replaced = mapRemoteQuestion(res.question, idx);
+        } else if (state.settings.aiMode === 'server') {
+          var r = await fetch('/api/ai/regenerate-question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: state.title,
+              subtitles: configObj.subtitles,
+              subject: state.subject,
+              level: state.level,
+              gradeClass: state.gradeClass,
+              optionCount: Number(state.optionCount || 5),
+              language: state.language,
+              existingQuestion: q,
+              otherPrompts: otherPrompts
+            })
+          });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          replaced = mapRemoteQuestion(await r.json(), idx);
+        }
+        if (replaced) {
+          replaced.number = q.number;
+          state.questions[idx] = replaced;
+          saveState();
+          renderEditor();
+          toast('Berhasil!', 'Soal nomor ' + q.number + ' diperbarui secara live.');
+        }
+      } catch (err) {
+        toast('Gagal Buat Ulang', err.message);
+      }
+    },
+    setDisplayMode: function (m) {
+      state.displayMode = m;
+      saveState();
+      renderEditor();
+    },
+    updateQ: function (idx, field, val) {
+      if (!state.questions[idx]) return;
+      state.questions[idx][field] = val;
+      saveState();
+    },
+    updateMatchingPair: function (qIdx, pairIdx, field, val) {
+      var q = state.questions[qIdx];
+      if (!q || !Array.isArray(q.matchingPairs) || !q.matchingPairs[pairIdx]) return;
+      q.matchingPairs[pairIdx][field] = val;
+      q.correctAnswer = getSynchronizedMatching(q.matchingPairs).answerKey;
+      saveState();
+      renderEditor();
+    },
+    addMatchingPair: function (qIdx) {
+      var q = state.questions[qIdx];
+      if (!q) return;
+      if (!Array.isArray(q.matchingPairs)) q.matchingPairs = [];
+      q.matchingPairs.push({ id: String(q.matchingPairs.length + 1), left: '', right: '' });
+      q.correctAnswer = getSynchronizedMatching(q.matchingPairs).answerKey;
+      saveState();
+      renderEditor();
+    },
+    removeMatchingPair: function (qIdx, pairIdx) {
+      var q = state.questions[qIdx];
+      if (!q || !Array.isArray(q.matchingPairs)) return;
+      q.matchingPairs.splice(pairIdx, 1);
+      q.correctAnswer = getSynchronizedMatching(q.matchingPairs).answerKey;
+      saveState();
+      renderEditor();
+    },
+    deleteQuestion: function (idx) {
+      state.questions.splice(idx, 1);
+      state.questions.forEach(function (q, i) { q.number = i + 1; });
+      saveState();
+      renderTypesGrid();
+      renderEditor();
+    },
+    saveSettings: function () {
+      state.settings.institutionName = document.getElementById('kop-inst').value;
+      state.settings.institutionAddress = document.getElementById('kop-addr').value;
+      state.settings.examTitle = document.getElementById('kop-exam').value;
+      state.settings.teacherName = document.getElementById('kop-teacher').value;
+      state.settings.gradeClass = document.getElementById('kop-class').value;
+      if (state.settings.gradeClass) state.gradeClass = state.settings.gradeClass;
+      state.settings.timeAllocation = document.getElementById('kop-time').value;
+      state.settings.aiMode = document.getElementById('ai-mode').value;
+      state.settings.aiEndpoint = document.getElementById('ai-endpoint').value.trim();
+      saveState();
+      syncInputsFromState();
+      toast('Pengaturan Disimpan', 'Identitas kop dan konfigurasi koneksi disimpan.');
+    },
+    downloadWord: function () {
+      var mode = document.getElementById('export-mode').value;
+      var bodyHtml = buildExportSheetHtml(mode);
+      var fullDoc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+        '<head><meta charset="utf-8"><title>' + esc(state.title) + '</title><style>' +
+        '@page{size:A4;margin:1cm 1.1cm;}' +
+        'body{font-family:Calibri,Amiri,sans-serif;font-size:9.5pt;line-height:1.3;}' +
+        '.font-arabic{font-family:Amiri,"Traditional Arabic",serif;}' +
+        '.sheet-table,.kisi-table{width:100%;border-collapse:collapse;}' +
+        '.sheet-table td,.kisi-table th,.kisi-table td{border:1px solid #94A3B8;padding:4px 6px;}' +
+        '.kisi-table th{background:#E2E8F0;font-weight:bold;}' +
+        '</style></head>' +
+        '<body>' + bodyHtml + '</body></html>';
+      var blob = new Blob(['\ufeff', fullDoc], { type: 'application/msword' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'SIT-PLUS-CORDOVA-Naskah-Soal.doc';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast('File Word Diunduh', 'Format padat A4 siap dibuka di Microsoft Word atau Google Docs.');
+    },
+    copyBloggerHtml: async function () {
+      var html = buildExportSheetHtml(document.getElementById('export-mode').value);
+      try {
+        await navigator.clipboard.writeText(html);
+        toast('HTML Blogger Disalin', 'Tempelkan pada mode HTML postingan Blogger Anda.');
+      } catch (e) {
+        toast('Info', 'Salin manual dari tab pratinjau jika clipboard diblokir.');
+      }
+    },
+    setRppMode: function (m) {
+      state.rppViewMode = m;
+      saveState();
+      renderRpp();
+    },
+    syncRppFromGenerator: function () {
+      readInputsToState();
+      var base = state.rpp || getDefaultRpp();
+      var grade = state.gradeClass || state.settings.gradeClass || 'Kelas 3';
+      base.institutionName = state.settings.institutionName || base.institutionName;
+      base.institutionAddress = state.settings.institutionAddress || base.institutionAddress;
+      base.teacherName = state.settings.teacherName || base.teacherName;
+      base.subject = state.subject || base.subject;
+      base.level = state.level || base.level;
+      base.gradeClass = grade;
+      base.fase = getFaseKurikulumMerdeka(state.level, grade);
+      base.topic = cleanAsterisks(state.title || base.topic);
+      base.subtopics = (state.subtitles && state.subtitles.length > 0 ? state.subtitles : [base.topic]).map(cleanAsterisks);
+      state.rpp = base;
+      saveState();
+      renderRpp();
+      toast('Materi Disinkronkan', 'Identitas, kelas, dan topik RPP diperbarui dari tab Buat Soal.');
+    },
+    updateRppField: function (path, val) {
+      if (!state.rpp) state.rpp = getDefaultRpp();
+      var r = state.rpp;
+      var cleaned = cleanAsterisks(val);
+      if (path === 'subtopics') {
+        r.subtopics = cleaned.split(/[,\n]/).map(function (s) { return s.trim(); }).filter(Boolean);
+      } else if (path === 'profilPelajarPancasila' || path === 'tujuanPembelajaran' || path === 'pertanyaanPemantik') {
+        r[path] = cleaned.split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+      } else if (path === 'kegiatan.pendahuluan' || path === 'kegiatan.inti' || path === 'kegiatan.penutup') {
+        var kKey = path.split('.')[1];
+        if (!r.kegiatanPembelajaran) r.kegiatanPembelajaran = {};
+        if (!r.kegiatanPembelajaran[kKey]) r.kegiatanPembelajaran[kKey] = { durasi: '20 Menit', langkah: [] };
+        r.kegiatanPembelajaran[kKey].langkah = cleaned.split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+      } else if (path.indexOf('asesmen.') === 0) {
+        r.asesmen = r.asesmen || {};
+        r.asesmen[path.split('.')[1]] = cleaned;
+      } else if (path.indexOf('pengayaanRemedial.') === 0) {
+        r.pengayaanRemedial = r.pengayaanRemedial || {};
+        r.pengayaanRemedial[path.split('.')[1]] = cleaned;
+      } else if (path.indexOf('refleksi.') === 0) {
+        r.refleksi = r.refleksi || {};
+        r.refleksi[path.split('.')[1]] = cleaned;
+      } else {
+        r[path] = cleaned;
+        if (path === 'level' || path === 'gradeClass') {
+          r.fase = getFaseKurikulumMerdeka(r.level, r.gradeClass);
+        }
+      }
+      saveState();
+      renderRpp();
+    },
+    generateRpp: async function (forceOffline) {
+      if (!state.rpp) state.rpp = getDefaultRpp();
+      var r = state.rpp;
+      var btn = document.getElementById('btn-gen-rpp');
+      if (forceOffline || state.settings.aiMode === 'offline') {
+        var tpl = getDefaultRpp();
+        tpl.topic = r.topic;
+        tpl.subtopics = r.subtopics;
+        tpl.subject = r.subject;
+        tpl.level = r.level;
+        tpl.gradeClass = r.gradeClass;
+        tpl.fase = getFaseKurikulumMerdeka(r.level, r.gradeClass);
+        tpl.alokasiWaktu = r.alokasiWaktu;
+        tpl.jumlahPertemuan = r.jumlahPertemuan;
+        tpl.modelPembelajaran = r.modelPembelajaran;
+        tpl.principalName = r.principalName;
+        tpl.semester = r.semester;
+        tpl.academicYear = r.academicYear;
+        state.rpp = tpl;
+        saveState();
+        renderRpp();
+        toast('RPP Siap (Template Cepat)', 'Modul Ajar Kurikulum Merdeka berhasil disusun.');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Menyusun RPP Live...';
+      }
+      try {
+        var payload = {
+          topic: r.topic || state.title,
+          subtopics: (r.subtopics && r.subtopics.length ? r.subtopics : state.subtitles),
+          subject: r.subject || state.subject,
+          level: r.level || state.level,
+          gradeClass: r.gradeClass || state.gradeClass,
+          fase: r.fase || getFaseKurikulumMerdeka(r.level, r.gradeClass),
+          semester: r.semester,
+          academicYear: r.academicYear,
+          alokasiWaktu: r.alokasiWaktu,
+          jumlahPertemuan: r.jumlahPertemuan,
+          modelPembelajaran: r.modelPembelajaran,
+          targetPesertaDidik: r.targetPesertaDidik,
+          institutionName: r.institutionName || state.settings.institutionName,
+          institutionAddress: r.institutionAddress || state.settings.institutionAddress,
+          teacherName: r.teacherName || state.settings.teacherName,
+          teacherNip: r.teacherNip,
+          principalName: r.principalName,
+          principalNip: r.principalNip
+        };
+        var res;
+        if (state.settings.aiMode === 'gas') {
+          res = await callGasApi('standalone_generate_rpp', payload, 90000);
+          res = (res && res.rpp) ? res.rpp : res;
+        } else {
+          var resp = await fetch('/api/ai/generate-rpp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          res = await resp.json();
+        }
+        state.rpp = Object.assign(getDefaultRpp(), res || {});
+        saveState();
+        state.rppViewMode = 'preview';
+        renderRpp();
+        toast('RPP Kurmer Selesai!', 'Modul Ajar Kurikulum Merdeka siap cetak dan edit.');
+      } catch (err) {
+        toast('Gagal Membuat RPP Live', err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Buat RPP Otomatis (AI Live)';
+        }
+      }
+    },
+    downloadRppWord: function () {
+      if (!state.rpp) state.rpp = getDefaultRpp();
+      var bodyHtml = buildRppSheetHtml(state.rpp);
+      var fullDoc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+        '<head><meta charset="utf-8"><title>RPP Kurmer - ' + esc(state.rpp.topic) + '</title><style>' +
+        '@page{size:A4;margin:1cm 1.1cm;}' +
+        'body{font-family:Calibri,Amiri,sans-serif;font-size:9.5pt;line-height:1.35;}' +
+        '.sheet-table,.kisi-table{width:100%;border-collapse:collapse;}' +
+        '.sheet-table td,.kisi-table th,.kisi-table td{border:1px solid #94A3B8;padding:4px 6px;}' +
+        '.kisi-table th{background:#E2E8F0;font-weight:bold;}' +
+        '.rpp-section-box{border:1px solid #CBD5E1;padding:6px 8px;margin-bottom:8px;}' +
+        '.rpp-section-title{font-weight:bold;color:#0F294A;border-bottom:1px solid #E2E8F0;margin-bottom:4px;}' +
+        '</style></head>' +
+        '<body>' + bodyHtml + '</body></html>';
+      var blob = new Blob(['\ufeff', fullDoc], { type: 'application/msword' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'SIT-PLUS-CORDOVA-RPP-Kurmer.doc';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast('RPP Word Diunduh', 'Modul Ajar Kurikulum Merdeka siap dibuka di Microsoft Word.');
+    },
+    renderExport: renderExport
+  };
+
+  syncInputsFromState();
+  renderSubtitles();
+  renderBloom();
+  renderTypesGrid();
+  if (state.tab && state.tab !== 'generator') {
+    window.App.setTab(state.tab);
+  }
+})();
+</script>
+</body>
+</html>

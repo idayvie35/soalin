@@ -1,0 +1,174 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+    --font-arabic: "Noto Naskh Arabic", "Amiri", "Traditional Arabic", serif;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+  line-height: 2.05;
+  letter-spacing: 0;
+  word-spacing: 0.04em;
+  font-feature-settings: "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+}
+
+.font-arabic-display {
+  font-family: "Amiri", "Noto Naskh Arabic", serif;
+  line-height: 2.1;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.55);
+}
+
+/* Arabic Tracing & Coloring A4 Large Worksheet (2 soal / halaman A4) */
+.arabic-khat-guides {
+  position: relative;
+  background-image:
+    linear-gradient(to bottom, transparent 24%, rgba(148, 163, 184, 0.35) 24%, rgba(148, 163, 184, 0.35) 25%, transparent 25%),
+    linear-gradient(to bottom, transparent 54%, rgba(100, 116, 139, 0.4) 54%, rgba(100, 116, 139, 0.4) 55.5%, transparent 55.5%),
+    linear-gradient(to bottom, transparent 82%, rgba(148, 163, 184, 0.35) 82%, rgba(148, 163, 184, 0.35) 83%, transparent 83%);
+}
+
+.arabic-trace-text {
+  font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.9;
+  letter-spacing: 0;
+  word-spacing: 0.14em;
+  color: #f8fafc;
+  -webkit-text-stroke: 1.8px #64748b;
+  paint-order: stroke fill;
+  font-feature-settings: "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+}
+
+.arabic-color-text {
+  font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif;
+  font-size: 62px;
+  font-weight: 700;
+  line-height: 1.85;
+  letter-spacing: 0;
+  word-spacing: 0.16em;
+  color: #ffffff;
+  -webkit-text-stroke: 4px #0f172a;
+  paint-order: stroke fill;
+  font-feature-settings: "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+}
+
+.arabic-a4-big-card {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 14px 18px;
+}
+
+/* Print Stylesheet for Official Exam PDF/Print Output */
+@media print {
+  @page {
+    size: A4;
+    margin: 9mm 10mm 10mm 10mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 9.5pt;
+    line-height: 1.35;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 9.5pt !important;
+    line-height: 1.35 !important;
+  }
+
+  .print-page-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .print-page-after {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .arabic-a4-big-card {
+    min-height: 104mm !important;
+    padding: 10px 14px !important;
+    margin-bottom: 5mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .arabic-trace-text {
+    font-size: 52px !important;
+    line-height: 1.8 !important;
+    color: #f8fafc !important;
+    -webkit-text-stroke: 1.6px #64748b !important;
+  }
+
+  .arabic-color-text {
+    font-size: 64px !important;
+    line-height: 1.8 !important;
+    color: #ffffff !important;
+    -webkit-text-stroke: 3.8px #0f172a !important;
+  }
+}

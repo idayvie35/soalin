@@ -1,0 +1,8 @@
+{
+  "name": "SIT PLUS CORDOVA — Smart Question Generator",
+  "description": "Aplikasi pembuat soal ujian dan evaluasi pembelajaran AI untuk Sekolah Islam Terpadu Plus Cordova (SD–SMA), disusun oleh Ustdz Mulyadi, S.T.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

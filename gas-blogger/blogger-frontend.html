@@ -1,0 +1,1777 @@
+<!--
+  SIT PLUS CORDOVA — Sekolah Islam Terpadu Plus Cordova (SD–SMA)
+  Frontend Standalone untuk Google Blogger (Halaman Statis / Postingan HTML)
+  Arsitektur: HTML5 + CSS3 Terisolasi (.sl-app) + Vanilla JavaScript
+  Backend: Google Apps Script Web App (GAS) + Google Sheets + Google AI Studio (Gemini API)
+  Petunjuk: Ganti DEFAULT_GAS_URL di bawah dengan URL Web App deployment Google Apps Script Anda,
+  lalu tempel seluruh kode ini ke Mode HTML Halaman Statis Blogger.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Noto+Naskh+Arabic:wght@400;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+  .sl-app *, .sl-app *::before, .sl-app *::after { box-sizing: border-box; }
+  .sl-app {
+    --sl-navy: #0F294A;
+    --sl-navy-hover: #163B69;
+    --sl-blue: #1D4ED8;
+    --sl-emerald: #059669;
+    --sl-bg: #F8FAFC;
+    --sl-card: #FFFFFF;
+    --sl-border: #E2E8F0;
+    --sl-text: #0F172A;
+    --sl-muted: #64748B;
+    --sl-danger: #DC2626;
+    font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+    background: var(--sl-bg);
+    color: var(--sl-text);
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    line-height: 1.5;
+    position: relative;
+  }
+  .sl-app h1, .sl-app h2, .sl-app h3, .sl-app .sl-display {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    margin: 0;
+  }
+  .sl-app .sl-arabic {
+    font-family: "Noto Naskh Arabic", "Amiri", serif;
+    line-height: 2.05;
+    font-size: 1.18rem;
+  }
+  .sl-app .sl-mono { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; }
+  .sl-shell { display: flex; min-height: 100vh; }
+  .sl-sidebar {
+    width: 256px;
+    flex-shrink: 0;
+    background: var(--sl-card);
+    border-right: 1px solid var(--sl-border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .sl-brand {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--sl-border);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--sl-navy);
+    letter-spacing: -0.02em;
+  }
+  .sl-nav { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .sl-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #475569;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+  .sl-nav-btn:hover { background: #F1F5F9; color: var(--sl-text); }
+  .sl-nav-btn.active { background: var(--sl-navy); color: #FFFFFF; font-weight: 600; }
+  .sl-main { flex: 1; min-width: 0; padding: 24px; max-width: 1180px; margin: 0 auto; width: 100%; }
+  .sl-mobile-header {
+    display: none;
+    height: 54px;
+    background: var(--sl-card);
+    border-bottom: 1px solid var(--sl-border);
+    padding: 0 14px;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  .sl-mobile-bottom {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--sl-card);
+    border-top: 1px solid var(--sl-border);
+    z-index: 40;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .sl-mobile-bottom button {
+    flex: 1;
+    min-height: 44px;
+    border: none;
+    background: transparent;
+    font-size: 11px;
+    color: var(--sl-muted);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .sl-mobile-bottom button.active { color: var(--sl-navy); }
+  .sl-drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 60;
+  }
+  .sl-drawer-backdrop.open { display: flex; }
+  .sl-drawer {
+    width: 270px;
+    max-width: 82vw;
+    background: var(--sl-card);
+    height: 100%;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .sl-card {
+    background: var(--sl-card);
+    border: 1px solid var(--sl-border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  }
+  .sl-grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .sl-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .sl-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--sl-border);
+  }
+  .sl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 42px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--sl-navy);
+    background: var(--sl-navy);
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .sl-btn:hover { background: var(--sl-navy-hover); }
+  .sl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .sl-btn-sec {
+    background: #FFFFFF;
+    color: var(--sl-text);
+    border: 1px solid var(--sl-border);
+  }
+  .sl-btn-sec:hover { background: #F1F5F9; }
+  .sl-btn-emerald { background: var(--sl-emerald); border-color: var(--sl-emerald); color: #FFFFFF; }
+  .sl-btn-danger { background: #FFFFFF; color: var(--sl-danger); border-color: #FECACA; }
+  .sl-input, .sl-select, .sl-textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid var(--sl-border);
+    border-radius: 9px;
+    background: #F8FAFC;
+    color: var(--sl-text);
+    font-family: inherit;
+    font-size: 13.5px;
+  }
+  .sl-textarea { min-height: 84px; resize: vertical; }
+  .sl-input:focus, .sl-select:focus, .sl-textarea:focus {
+    outline: none;
+    border-color: var(--sl-navy);
+    background: #FFFFFF;
+  }
+  .sl-label { display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+  .sl-meta { font-size: 12px; color: var(--sl-muted); }
+  .sl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+  .sl-progress-fill { height: 100%; background: var(--sl-navy); transition: width 0.3s ease; }
+  .sl-toast-wrap {
+    position: fixed;
+    right: 16px;
+    bottom: 70px;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 340px;
+    width: calc(100% - 32px);
+  }
+  .sl-toast {
+    background: #FFFFFF;
+    border: 1px solid var(--sl-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    font-size: 13px;
+  }
+  .sl-table-wrap { overflow-x: auto; }
+  .sl-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sl-table th, .sl-table td { padding: 10px 12px; border-bottom: 1px solid var(--sl-border); text-align: left; }
+  .sl-table th { background: #F8FAFC; font-size: 12px; color: #475569; }
+  .sl-hidden { display: none !important; }
+  .sl-arabic-khat-guides {
+    background-image:
+      linear-gradient(to bottom, transparent 24%, rgba(148, 163, 184, 0.35) 24%, rgba(148, 163, 184, 0.35) 25%, transparent 25%),
+      linear-gradient(to bottom, transparent 54%, rgba(100, 116, 139, 0.4) 54%, rgba(100, 116, 139, 0.4) 55.5%, transparent 55.5%),
+      linear-gradient(to bottom, transparent 82%, rgba(148, 163, 184, 0.35) 82%, rgba(148, 163, 184, 0.35) 83%, transparent 83%);
+  }
+  .sl-arabic-trace {
+    font-family: "Amiri", "Noto Naskh Arabic", serif;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.9;
+    color: #F8FAFC;
+    -webkit-text-stroke: 1.8px #64748B;
+    paint-order: stroke fill;
+  }
+  .sl-arabic-color {
+    font-family: "Amiri", "Noto Naskh Arabic", serif;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.85;
+    color: #FFFFFF;
+    -webkit-text-stroke: 4px #0F172A;
+    paint-order: stroke fill;
+  }
+  @media (max-width: 960px) {
+    .sl-sidebar { display: none; }
+    .sl-mobile-header { display: flex; }
+    .sl-mobile-bottom { display: flex; }
+    .sl-main { padding: 16px 14px 76px; }
+    .sl-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sl-grid-2 { grid-template-columns: 1fr; }
+  }
+  @media print {
+    .sl-sidebar, .sl-mobile-header, .sl-mobile-bottom, .sl-no-print { display: none !important; }
+    .sl-main { padding: 0 !important; max-width: 100% !important; }
+    .sl-card { border: none !important; box-shadow: none !important; }
+  }
+</style>
+
+<div class="sl-app" id="soalin-root">
+  <!-- Mobile Header -->
+  <header class="sl-mobile-header">
+    <span class="sl-display" style="font-weight:800;color:var(--sl-navy);font-size:15px;">SIT PLUS CORDOVA</span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="sl-mobile-user" class="sl-meta"></span>
+      <button type="button" class="sl-btn sl-btn-sec" style="min-height:36px;padding:4px 10px;" onclick="SoalinApp.toggleDrawer(true)">Menu</button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="sl-drawer-backdrop" id="sl-drawer-backdrop" onclick="if(event.target===this)SoalinApp.toggleDrawer(false)">
+    <div class="sl-drawer">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--sl-border);">
+        <strong class="sl-display" style="color:var(--sl-navy);">SIT PLUS CORDOVA</strong>
+        <button type="button" class="sl-btn sl-btn-sec" style="min-height:34px;padding:4px 10px;" onclick="SoalinApp.toggleDrawer(false)">Tutup</button>
+      </div>
+      <div id="sl-mobile-nav-list" style="margin-top:10px;display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+  </div>
+
+  <div class="sl-shell">
+    <!-- Desktop Sidebar -->
+    <aside class="sl-sidebar">
+      <div class="sl-brand">SIT PLUS CORDOVA<div style="font-size:11px;font-weight:500;color:#059669;margin-top:2px;">SD–SMA · Ustdz Mulyadi, S.T.</div></div>
+      <nav class="sl-nav" id="sl-desktop-nav"></nav>
+      <div style="padding:12px;border-top:1px solid var(--sl-border);font-size:12px;" id="sl-sidebar-footer"></div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="sl-main" id="sl-main-view"></main>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="sl-mobile-bottom">
+    <button type="button" data-nav="dashboard" onclick="SoalinApp.go('dashboard')">Dashboard</button>
+    <button type="button" data-nav="create" onclick="SoalinApp.go('create')">Buat Soal</button>
+    <button type="button" data-nav="editor" onclick="SoalinApp.go('editor')">Editor</button>
+    <button type="button" data-nav="export" onclick="SoalinApp.go('export')">Ekspor</button>
+    <button type="button" onclick="SoalinApp.toggleDrawer(true)">Lainnya</button>
+  </nav>
+
+  <div class="sl-toast-wrap" id="sl-toasts"></div>
+</div>
+
+<script>
+(function () {
+  // URL Web App Google Apps Script SIT PLUS CORDOVA
+  var DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwmkqPA5cfAmvhGJ2k8fXQOwypyYznXr5aXhIYIoMXtgX3khJgrPo1c_Zsb6N02tuSpYQ/exec';
+
+  var QUESTION_TYPES = [
+    { code: 'pilihan_ganda', label: 'Pilihan Ganda' },
+    { code: 'pilihan_ganda_kompleks', label: 'Pilihan Ganda Kompleks' },
+    { code: 'benar_salah', label: 'Benar atau Salah' },
+    { code: 'esai', label: 'Esai / Uraian' },
+    { code: 'isian_singkat', label: 'Isian Singkat' },
+    { code: 'menjodohkan', label: 'Menjodohkan' },
+    { code: 'melengkapi_kalimat', label: 'Melengkapi Kalimat' },
+    { code: 'mengurutkan', label: 'Mengurutkan' },
+    { code: 'studi_kasus', label: 'Studi Kasus' },
+    { code: 'analisis_teks', label: 'Analisis Teks' },
+    { code: 'hots', label: 'Soal HOTS' },
+    { code: 'berbasis_gambar', label: 'Soal Berbasis Gambar' },
+    { code: 'pemahaman_bacaan', label: 'Pemahaman Bacaan' },
+    { code: 'analisis_data', label: 'Analisis Data' },
+    { code: 'interpretasi_grafik', label: 'Interpretasi Grafik' },
+    { code: 'pemecahan_masalah', label: 'Pemecahan Masalah' },
+    { code: 'memisah_hijaiyah', label: 'Memisah Huruf Hijaiyah' },
+    { code: 'menyambung_hijaiyah', label: 'Menyambung Huruf Hijaiyah' },
+    { code: 'menulis_ulang_kalimat', label: 'Menulis Ulang Kalimat (1-3+ Kata)' },
+    { code: 'menebalkan_mewarnai_arab', label: 'Menebalkan & Mewarnai Arab (A4 · 2 Soal)' },
+  ];
+
+  var LEVELS = ['SD', 'SMP', 'SMA', 'SMK', 'MA', 'MTs', 'MI', 'Perguruan Tinggi', 'Umum'];
+  var GRADE_BY_LEVEL = {
+    SD: ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'],
+    MI: ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'],
+    SMP: ['Kelas 7', 'Kelas 8', 'Kelas 9'],
+    MTs: ['Kelas 7', 'Kelas 8', 'Kelas 9'],
+    SMA: ['Kelas 10', 'Kelas 11', 'Kelas 12'],
+    SMK: ['Kelas 10', 'Kelas 11', 'Kelas 12'],
+    MA: ['Kelas 10', 'Kelas 11', 'Kelas 12'],
+    'Perguruan Tinggi': ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6'],
+    Umum: ['Dasar', 'Menengah', 'Lanjutan'],
+  };
+  var LANGUAGES = ['Indonesia', 'Arab', 'Inggris', 'Indonesia-Arab', 'Indonesia-Inggris'];
+  var BLOOM_CODES = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
+
+  var NAV_ITEMS = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'create', label: 'Buat Soal' },
+    { id: 'projects', label: 'Proyek Saya' },
+    { id: 'editor', label: 'Editor & Preview' },
+    { id: 'kisi_kisi', label: 'Kisi-Kisi (Kurmer)' },
+    { id: 'rpp_kurmer', label: 'RPP (Kurmer)' },
+    { id: 'bank', label: 'Bank Soal' },
+    { id: 'history', label: 'Riwayat' },
+    { id: 'templates', label: 'Template Soal' },
+    { id: 'export', label: 'Ekspor Dokumen' },
+    { id: 'profile', label: 'Profil' },
+    { id: 'settings', label: 'Pengaturan' },
+    { id: 'admin', label: 'Admin Panel', adminOnly: true },
+  ];
+
+  var storedGasUrl = localStorage.getItem('soalin_gas_url') || '';
+  if (storedGasUrl.indexOf('PASTE_YOUR_DEPLOYMENT_ID') !== -1) {
+    storedGasUrl = '';
+    localStorage.setItem('soalin_gas_url', DEFAULT_GAS_URL);
+  }
+
+  var state = {
+    gasUrl: storedGasUrl || DEFAULT_GAS_URL,
+    token: localStorage.getItem('soalin_session_token') || '',
+    user: JSON.parse(localStorage.getItem('soalin_user') || 'null'),
+    publicConfig: null,
+    page: 'dashboard',
+    dashboard: null,
+    projects: [],
+    activeProject: null,
+    editorMode: 'teacher', // student | teacher | edit
+    autosaveLabel: '',
+    bankItems: [],
+    selectedBankIds: {},
+    historyItems: [],
+    templates: [],
+    adminData: null,
+    adminModels: [],
+    activeJob: null,
+    pollTimer: null,
+    form: {
+      title: '',
+      subtitles: [],
+      subtitleDraft: '',
+      description: '',
+      referenceText: '',
+      level: 'SMA',
+      subject: 'Bahasa Arab',
+      grade: 'Kelas 11',
+      language: 'Indonesia-Arab',
+      difficulty: 'Campuran',
+      cognitiveLevels: ['C2', 'C3', 'C4'],
+      hotsPercentage: 30,
+      depth: 'Menengah',
+      questionLength: 'Standar',
+      optionCount: 5,
+      shuffleQuestions: false,
+      shuffleOptions: true,
+      arabicFocus: 'Nahwu',
+      harakatMode: 'Penuh',
+      rewriteWordMode: 'progressive',
+      rewriteWordCount: 3,
+      counts: { pilihan_ganda: 5, esai: 2, benar_salah: 2, hots: 1 },
+    },
+    rpp: null,
+    rppMode: 'preview',
+  };
+
+  function cleanAsterisks(input) {
+    if (input === null || input === undefined) return '';
+    var text = String(input);
+    text = text.replace(/(\d\s*)\*(\s*\d)/g, '$1__MATH_MUL__$2');
+    text = text.replace(/^\s*\*\s+/gm, '• ');
+    text = text.replace(/\*/g, '');
+    text = text.replace(/^\s*#{1,6}\s+/gm, '');
+    text = text.replace(/`/g, '');
+    text = text.replace(/__MATH_MUL__/g, '×');
+    return text.replace(/[ \t]+\n/g, '\n').trim();
+  }
+
+  function esc(str) {
+    return cleanAsterisks(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function isArabic(str) {
+    return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(str || ''));
+  }
+
+  function hasLatin(str) {
+    return /[A-Za-z\u00C0-\u024F]/.test(String(str || ''));
+  }
+
+  function isPureArabic(str) {
+    var s = cleanAsterisks(str);
+    if (!s) return false;
+    return isArabic(s) && !hasLatin(s);
+  }
+
+  function getDir(str) {
+    return isPureArabic(str) ? 'rtl' : 'ltr';
+  }
+
+  function toast(title, msg, isErr) {
+    var wrap = document.getElementById('sl-toasts');
+    var el = document.createElement('div');
+    el.className = 'sl-toast';
+    el.style.borderColor = isErr ? '#FCA5A5' : '#A7F3D0';
+    el.innerHTML =
+      '<strong style="color:' + (isErr ? '#B91C1C' : '#065F46') + ';">' + esc(title) + '</strong>' +
+      (msg ? '<div class="sl-meta" style="margin-top:3px;">' + esc(msg) + '</div>' : '');
+    wrap.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 4500);
+  }
+
+  // Communication Adapter GAS: text/plain menghindari CORS OPTIONS preflight pada Google Apps Script WebApp
+  async function callGas(action, payload, timeoutMs) {
+    if (!state.gasUrl || state.gasUrl.indexOf('PASTE_YOUR_DEPLOYMENT_ID') !== -1) {
+      throw new Error('URL Google Apps Script belum diatur. Buka menu Pengaturan untuk mengisi URL Web App GAS.');
+    }
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, timeoutMs || 45000);
+    try {
+      var res = await fetch(state.gasUrl, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: action,
+          token: state.token,
+          payload: payload || {},
+          requestId: 'req-' + Date.now(),
+        }),
+        signal: controller.signal,
+      });
+      var text = await res.text();
+      var data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error('Respons GAS bukan JSON valid. Pastikan Web App diakses sebagai Anyone.');
+      }
+      if (!data.ok) {
+        var code = data.error && data.error.code;
+        if (code === 'UNAUTHORIZED') {
+          state.token = '';
+          state.user = null;
+          localStorage.removeItem('soalin_session_token');
+          localStorage.removeItem('soalin_user');
+          render();
+        }
+        throw new Error((data.error && data.error.message) || 'Permintaan gagal.');
+      }
+      return data.data;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function renderNav() {
+    var dNav = document.getElementById('sl-desktop-nav');
+    var mNav = document.getElementById('sl-mobile-nav-list');
+    var items = NAV_ITEMS.filter(function (n) {
+      return !n.adminOnly || (state.user && state.user.role === 'Administrator');
+    });
+
+    var html = items.map(function (item) {
+      var cls = 'sl-nav-btn' + (state.page === item.id ? ' active' : '');
+      return '<button type="button" class="' + cls + '" onclick="SoalinApp.go(\'' + item.id + '\')">' + esc(item.label) + '</button>';
+    }).join('');
+    dNav.innerHTML = html;
+    mNav.innerHTML = html;
+
+    var footer = document.getElementById('sl-sidebar-footer');
+    if (state.user) {
+      footer.innerHTML =
+        '<div style="font-weight:600;color:var(--sl-text);">' + esc(state.user.name) + '</div>' +
+        '<div class="sl-meta">' + esc(state.user.role) + '</div>' +
+        '<button type="button" class="sl-btn sl-btn-sec" style="width:100%;margin-top:8px;min-height:36px;" onclick="SoalinApp.logout()">Keluar</button>';
+      document.getElementById('sl-mobile-user').textContent = state.user.name;
+    } else {
+      footer.innerHTML = '<span class="sl-meta">Belum login</span>';
+      document.getElementById('sl-mobile-user').textContent = '';
+    }
+
+    document.querySelectorAll('.sl-mobile-bottom button[data-nav]').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-nav') === state.page);
+    });
+  }
+
+  function renderLoginOrConfig() {
+    var main = document.getElementById('sl-main-view');
+    var clientId = state.publicConfig && state.publicConfig.googleClientId;
+    main.innerHTML =
+      '<div class="sl-card" style="max-width:540px;margin:32px auto;">' +
+        '<h1 style="font-size:22px;color:var(--sl-navy);">SIT PLUS CORDOVA — Smart Question Generator</h1>' +
+        '<p class="sl-meta" style="margin-top:6px;">Sekolah Islam Terpadu Plus Cordova (SD–SMA) · Pengampu: Ustdz Mulyadi, S.T. Masuk dengan akun Google untuk mulai menyusun bank soal dan naskah ujian.</p>' +
+        '<div style="margin-top:18px;padding:14px;border:1px solid var(--sl-border);border-radius:10px;background:#F8FAFC;">' +
+          '<label class="sl-label">URL Web App Google Apps Script</label>' +
+          '<div style="display:flex;gap:8px;">' +
+            '<input class="sl-input" id="sl-login-gas-url" value="' + esc(state.gasUrl) + '" />' +
+            '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.saveGasUrlFromInput(\'sl-login-gas-url\')">Hubungkan</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:20px;">' +
+          (clientId
+            ? '<div id="sl-google-btn"></div>'
+            : '<p class="sl-meta" style="color:#B45309;">Hubungkan URL GAS Web App yang valid dan pastikan GOOGLE_CLIENT_ID terisi di Script Properties untuk menampilkan tombol Masuk dengan Google.</p>') +
+        '</div>' +
+      '</div>';
+
+    if (clientId && window.google && window.google.accounts) {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async function (response) {
+          try {
+            var res = await callGas('auth_login', { idToken: response.credential });
+            state.token = res.sessionToken;
+            state.user = res.user;
+            localStorage.setItem('soalin_session_token', state.token);
+            localStorage.setItem('soalin_user', JSON.stringify(state.user));
+            toast('Login Berhasil', 'Selamat datang, ' + state.user.name);
+            await loadInitialUserData();
+            render();
+          } catch (err) {
+            toast('Login Gagal', err.message, true);
+          }
+        },
+      });
+      window.google.accounts.id.renderButton(document.getElementById('sl-google-btn'), {
+        theme: 'outline',
+        size: 'large',
+        width: 300,
+      });
+    }
+  }
+
+  function renderDashboard(main) {
+    var d = state.dashboard;
+    if (!d) {
+      main.innerHTML = '<div class="sl-card">Memuat data dashboard...</div>';
+      return;
+    }
+    var s = d.stats;
+    main.innerHTML =
+      '<div class="sl-page-head">' +
+        '<div><p class="sl-meta">SIT PLUS CORDOVA · Sekolah Islam Terpadu Plus Cordova (SD–SMA) · Ustdz Mulyadi, S.T.</p><h1 style="font-size:24px;">Dashboard</h1></div>' +
+        '<button type="button" class="sl-btn" onclick="SoalinApp.go(\'create\')">+ Buat Soal Baru</button>' +
+      '</div>' +
+      '<div class="sl-grid-4">' +
+        '<div class="sl-card"><div class="sl-meta">Total Proyek</div><div class="sl-mono" style="font-size:24px;font-weight:700;margin-top:6px;">' + s.totalProjects + '</div></div>' +
+        '<div class="sl-card"><div class="sl-meta">Total Soal Dibuat</div><div class="sl-mono" style="font-size:24px;font-weight:700;margin-top:6px;">' + s.totalQuestionsGenerated + '</div></div>' +
+        '<div class="sl-card"><div class="sl-meta">Tersimpan di Bank Soal</div><div class="sl-mono" style="font-size:24px;font-weight:700;margin-top:6px;">' + s.totalBankSaved + '</div></div>' +
+        '<div class="sl-card"><div class="sl-meta">Kuota AI Hari Ini</div><div class="sl-mono" style="font-size:24px;font-weight:700;margin-top:6px;">' + s.quotaUsedToday + '/' + s.dailyQuotaLimit + '</div><div class="sl-meta">Token: ' + s.totalTokensUsed + '</div></div>' +
+      '</div>' +
+      '<div class="sl-grid-2" style="margin-top:18px;">' +
+        '<div class="sl-card">' +
+          '<h2 style="font-size:16px;margin-bottom:12px;">Proyek Terakhir</h2>' +
+          (d.recentProjects.length === 0
+            ? '<p class="sl-meta">Belum ada proyek. Klik Buat Soal Baru untuk memulai.</p>'
+            : d.recentProjects.map(function (p) {
+                return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--sl-border);gap:8px;">' +
+                  '<div><div style="font-weight:600;font-size:13.5px;">' + esc(p.title) + '</div><div class="sl-meta">' + esc(p.subject) + ' · ' + esc(p.level) + ' · ' + p.question_count + ' soal</div></div>' +
+                  '<button type="button" class="sl-btn sl-btn-sec" style="min-height:36px;" onclick="SoalinApp.openProject(\'' + esc(p.project_id) + '\')">Buka</button>' +
+                '</div>';
+              }).join('')) +
+        '</div>' +
+        '<div class="sl-card">' +
+          '<h2 style="font-size:16px;margin-bottom:12px;">Aktivitas Terbaru</h2>' +
+          (d.recentActivity.length === 0
+            ? '<p class="sl-meta">Belum ada aktivitas tercatat.</p>'
+            : d.recentActivity.map(function (h) {
+                return '<div style="padding:8px 0;border-bottom:1px solid var(--sl-border);font-size:12.5px;">' +
+                  '<strong>' + esc(h.action) + '</strong> — ' + esc(h.summary) +
+                  '<div class="sl-meta">' + new Date(h.created_at).toLocaleString('id-ID') + '</div>' +
+                '</div>';
+              }).join('')) +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderCreate(main) {
+    var f = state.form;
+    var totalTarget = Object.keys(f.counts).reduce(function (sum, k) {
+      return sum + Number(f.counts[k] || 0);
+    }, 0);
+
+    var jobBanner = '';
+    if (state.activeJob && (state.activeJob.status === 'Pending' || state.activeJob.status === 'Processing')) {
+      jobBanner =
+        '<div class="sl-card" style="margin-bottom:16px;border-color:#93C5FD;background:#EFF6FF;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">' +
+            '<div><strong>Memproses Pembuatan Soal (' + state.activeJob.progress_percent + '%)</strong><div class="sl-meta">' + esc(state.activeJob.progress_message) + '</div></div>' +
+            '<button type="button" class="sl-btn sl-btn-danger" style="min-height:36px;" onclick="SoalinApp.cancelActiveJob()">Batalkan</button>' +
+          '</div>' +
+          '<div class="sl-progress-bar"><div class="sl-progress-fill" style="width:' + state.activeJob.progress_percent + '%;"></div></div>' +
+        '</div>';
+    }
+
+    main.innerHTML =
+      '<div class="sl-page-head"><div><p class="sl-meta">Input Materi &amp; Komposisi Soal</p><h1 style="font-size:24px;">Buat Soal Baru</h1></div></div>' +
+      jobBanner +
+      '<div class="sl-grid-2">' +
+        '<div class="sl-card" style="display:flex;flex-direction:column;gap:12px;">' +
+          '<h2 style="font-size:16px;">1. Materi, Jenjang &amp; Bahasa</h2>' +
+          '<div><label class="sl-label">Judul Materi Utama</label><input class="sl-input" id="f-title" value="' + esc(f.title) + '" placeholder="Contoh: Sistem Pencernaan Manusia" onchange="SoalinApp.setForm(\'title\', this.value)" /></div>' +
+          '<div><label class="sl-label">Subjudul / Pokok Bahasan (Dinamis)</label>' +
+            '<div style="display:flex;gap:8px;"><input class="sl-input" id="f-sub-draft" placeholder="Tambah pokok bahasan lalu klik Tambah..." onkeydown="if(event.key===\'Enter\'){event.preventDefault();SoalinApp.addSubtitle();}" /><button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.addSubtitle()">Tambah</button></div>' +
+            '<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">' +
+              f.subtitles.map(function (s, idx) {
+                return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#F8FAFC;border:1px solid var(--sl-border);border-radius:8px;font-size:12.5px;">' +
+                  '<span>' + (idx + 1) + '. ' + esc(s) + '</span>' +
+                  '<button type="button" class="sl-btn sl-btn-danger" style="min-height:28px;padding:2px 8px;" onclick="SoalinApp.removeSubtitle(' + idx + ')">Hapus</button>' +
+                '</div>';
+              }).join('') +
+            '</div>' +
+          '</div>' +
+          '<div class="sl-grid-2">' +
+            '<div><label class="sl-label">Jenjang Pendidikan</label><select class="sl-select" onchange="SoalinApp.setForm(\'level\', this.value)">' +
+              LEVELS.map(function (l) { return '<option value="' + l + '"' + (f.level === l ? ' selected' : '') + '>' + l + '</option>'; }).join('') +
+            '</select></div>' +
+            '<div><label class="sl-label">Kelas / Tingkat</label>' +
+              '<select class="sl-select" onchange="if(this.value!==\'__custom__\')SoalinApp.setForm(\'grade\', this.value)">' +
+                (GRADE_BY_LEVEL[f.level] || GRADE_BY_LEVEL.Umum).map(function (g) {
+                  return '<option value="' + g + '"' + (f.grade === g ? ' selected' : '') + '>' + g + '</option>';
+                }).join('') +
+                ((GRADE_BY_LEVEL[f.level] || GRADE_BY_LEVEL.Umum).indexOf(f.grade) === -1 ? '<option value="__custom__" selected>' + esc(f.grade || 'Kustom...') + '</option>' : '') +
+              '</select>' +
+              '<input class="sl-input" style="margin-top:6px;min-height:34px;font-size:12px;" value="' + esc(f.grade) + '" placeholder="Atau ketik kelas..." onchange="SoalinApp.setForm(\'grade\', this.value)" />' +
+            '</div>' +
+          '</div>' +
+          '<div class="sl-grid-2">' +
+            '<div><label class="sl-label">Mata Pelajaran</label><input class="sl-input" value="' + esc(f.subject) + '" onchange="SoalinApp.setForm(\'subject\', this.value)" /></div>' +
+            '<div><label class="sl-label">Bahasa Soal</label><select class="sl-select" onchange="SoalinApp.setForm(\'language\', this.value)">' +
+              LANGUAGES.map(function (l) { return '<option value="' + l + '"' + (f.language === l ? ' selected' : '') + '>' + l + '</option>'; }).join('') +
+            '</select></div>' +
+          '</div>' +
+          '<div class="sl-grid-2">' +
+            '<div><label class="sl-label">Fokus Arab (Jika Arab/Madrasah)</label><input class="sl-input" value="' + esc(f.arabicFocus) + '" placeholder="Nahwu, Sharaf, Fiqih, Hadis..." onchange="SoalinApp.setForm(\'arabicFocus\', this.value)" /></div>' +
+            '<div><label class="sl-label">Mode Harakat</label><select class="sl-select" onchange="SoalinApp.setForm(\'harakatMode\', this.value)">' +
+              ['Penuh', 'Sebagian', 'Tanpa Harakat'].map(function (h) { return '<option value="' + h + '"' + (f.harakatMode === h ? ' selected' : '') + '>' + h + '</option>'; }).join('') +
+            '</select></div>' +
+          '</div>' +
+          '<div><label class="sl-label">Deskripsi Tambahan (Opsional)</label><textarea class="sl-textarea" onchange="SoalinApp.setForm(\'description\', this.value)">' + esc(f.description) + '</textarea></div>' +
+          '<div><label class="sl-label">Referensi Materi Tambahan (Opsional)</label><textarea class="sl-textarea" onchange="SoalinApp.setForm(\'referenceText\', this.value)">' + esc(f.referenceText) + '</textarea></div>' +
+        '</div>' +
+
+        '<div style="display:flex;flex-direction:column;gap:16px;">' +
+          '<div class="sl-card">' +
+            '<h2 style="font-size:16px;margin-bottom:10px;">2. Variasi Jenis &amp; Custom Jumlah Soal</h2>' +
+            '<div class="sl-grid-2" style="gap:10px;">' +
+              QUESTION_TYPES.map(function (t) {
+                var val = Number(f.counts[t.code] || 0);
+                return '<div style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--sl-border);padding:8px 10px;border-radius:8px;gap:6px;">' +
+                  '<span style="font-size:12.5px;font-weight:600;">' + esc(t.label) + '</span>' +
+                  '<input type="number" min="0" max="50" class="sl-input sl-mono" style="width:68px;min-height:36px;text-align:center;" value="' + val + '" onchange="SoalinApp.setCount(\'' + t.code + '\', this.value)" />' +
+                '</div>';
+              }).join('') +
+            '</div>' +
+            (Number(f.counts.menulis_ulang_kalimat || 0) > 0
+              ? '<div style="margin-top:12px;padding:12px;border:1px solid #A7F3D0;background:#ECFDF5;border-radius:10px;">' +
+                  '<div class="sl-label" style="color:#065F46;">Panjang Kalimat — Menulis Ulang (1 kata, 2 kata, 3 kata, dst.)</div>' +
+                  '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+                    '<select class="sl-select" style="width:auto;min-width:190px;min-height:36px;" onchange="SoalinApp.setForm(\'rewriteWordMode\', this.value)">' +
+                      '<option value="progressive"' + (f.rewriteWordMode === 'progressive' ? ' selected' : '') + '>Bertahap (1, 2, 3+ Kata)</option>' +
+                      '<option value="exact"' + (f.rewriteWordMode === 'exact' ? ' selected' : '') + '>Jumlah Kata Tetap</option>' +
+                    '</select>' +
+                    '<input type="number" min="1" max="20" class="sl-input sl-mono" style="width:76px;min-height:36px;text-align:center;" value="' + (f.rewriteWordCount || 3) + '" onchange="SoalinApp.setForm(\'rewriteWordCount\', Math.max(1, Number(this.value) || 1))" />' +
+                    '<span class="sl-meta">kata per soal</span>' +
+                  '</div>' +
+                '</div>'
+              : '') +
+          '</div>' +
+
+          '<div class="sl-card" style="display:flex;flex-direction:column;gap:10px;">' +
+            '<h2 style="font-size:16px;">3. Pengaturan Kualitas &amp; Taksonomi</h2>' +
+            '<div class="sl-grid-2">' +
+              '<div><label class="sl-label">Tingkat Kesulitan</label><select class="sl-select" onchange="SoalinApp.setForm(\'difficulty\', this.value)">' +
+                ['Mudah', 'Sedang', 'Sulit', 'Campuran'].map(function (d) { return '<option value="' + d + '"' + (f.difficulty === d ? ' selected' : '') + '>' + d + '</option>'; }).join('') +
+              '</select></div>' +
+              '<div><label class="sl-label">Opsi Pilihan Ganda</label><select class="sl-select" onchange="SoalinApp.setForm(\'optionCount\', Number(this.value))">' +
+                '<option value="3"' + (Number(f.optionCount) === 3 ? ' selected' : '') + '>3 Opsi (A–C / أ–ج)</option>' +
+                '<option value="4"' + (Number(f.optionCount) === 4 ? ' selected' : '') + '>4 Opsi (A–D / أ–د)</option>' +
+                '<option value="5"' + (Number(f.optionCount) === 5 ? ' selected' : '') + '>5 Opsi (A–E / أ–هـ)</option>' +
+              '</select></div>' +
+            '</div>' +
+            '<div class="sl-grid-2">' +
+              '<div><label class="sl-label">Persentase HOTS (%)</label><input type="number" min="0" max="100" class="sl-input" value="' + f.hotsPercentage + '" onchange="SoalinApp.setForm(\'hotsPercentage\', Number(this.value))" /></div>' +
+              '<div><label class="sl-label">Kedalaman Materi</label><select class="sl-select" onchange="SoalinApp.setForm(\'depth\', this.value)">' +
+                ['Dasar', 'Menengah', 'Mendalam'].map(function (d) { return '<option value="' + d + '"' + (f.depth === d ? ' selected' : '') + '>' + d + '</option>'; }).join('') +
+              '</select></div>' +
+            '</div>' +
+            '<div><label class="sl-label">Taksonomi Bloom</label><div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+              BLOOM_CODES.map(function (c) {
+                var active = f.cognitiveLevels.indexOf(c) !== -1;
+                return '<button type="button" class="sl-btn ' + (active ? '' : 'sl-btn-sec') + '" style="min-height:34px;padding:4px 12px;" onclick="SoalinApp.toggleBloom(\'' + c + '\')">' + c + '</button>';
+              }).join('') +
+            '</div></div>' +
+            '<div style="display:flex;gap:14px;flex-wrap:wrap;padding-top:4px;font-size:12.5px;">' +
+              '<label><input type="checkbox" ' + (f.shuffleQuestions ? 'checked' : '') + ' onchange="SoalinApp.setForm(\'shuffleQuestions\', this.checked)" /> Acak Urutan Soal</label>' +
+              '<label><input type="checkbox" ' + (f.shuffleOptions ? 'checked' : '') + ' onchange="SoalinApp.setForm(\'shuffleOptions\', this.checked)" /> Acak Opsi Jawaban</label>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--sl-border);">' +
+              '<div><div class="sl-meta">Total Soal</div><div class="sl-mono" style="font-size:20px;font-weight:700;">' + totalTarget + ' butir</div></div>' +
+              '<button type="button" class="sl-btn" onclick="SoalinApp.startGeneration()" ' + (totalTarget === 0 || !f.title.trim() ? 'disabled' : '') + '>BUAT SOAL OTOMATIS</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function getFaseKurmer(level, grade) {
+    var lvl = String(level || '').toUpperCase();
+    var gr = String(grade || '').toUpperCase();
+    if (lvl.indexOf('SD') !== -1 || lvl.indexOf('MI') !== -1) {
+      if (/\b(1|2|I|II)\b/.test(gr)) return 'Fase A (Kelas 1–2)';
+      if (/\b(3|4|III|IV)\b/.test(gr)) return 'Fase B (Kelas 3–4)';
+      return 'Fase C (Kelas 5–6)';
+    }
+    if (lvl.indexOf('SMP') !== -1 || lvl.indexOf('MTS') !== -1) return 'Fase D (Kelas 7–9)';
+    if (lvl.indexOf('SMA') !== -1 || lvl.indexOf('SMK') !== -1 || lvl.indexOf('MA') !== -1) {
+      if (/\b(10|X)\b/.test(gr)) return 'Fase E (Kelas 10)';
+      return 'Fase F (Kelas 11–12)';
+    }
+    return 'Fase Umum';
+  }
+
+  function buildKisiKisiRow(q, p) {
+    var tObj = QUESTION_TYPES.find(function (t) { return t.code === q.type; });
+    var bentuk = (tObj && tObj.label) || q.type;
+    var materi = q.topic_tag || (p && (p.title || p.subject)) || '-';
+    var cog = q.cognitive_level || 'C2';
+    var tier = q.thinking_tier || (cog === 'C1' || cog === 'C2' ? 'LOTS' : cog === 'C3' ? 'MOTS' : 'HOTS');
+    var cp = q.capaian_pembelajaran ||
+      ('Peserta didik menguasai capaian pembelajaran ' + ((p && p.subject) || '') + ' pada ' + getFaseKurmer(p && p.level, p && p.grade) + ' terkait materi ' + ((p && p.title) || '') + '.');
+    var tp = q.tujuan_pembelajaran ||
+      ('Peserta didik mampu memahami dan menerapkan konsep ' + materi + ' pada mata pelajaran ' + ((p && p.subject) || '') + '.');
+    var ind = q.indikator_soal ||
+      ('Disajikan stimulus/pernyataan tentang ' + materi + ', peserta didik dapat menyelesaikan soal ' + bentuk + ' dengan tepat.');
+    return {
+      number: q.number,
+      cp: cp,
+      tp: tp,
+      materi: materi,
+      indikator: ind,
+      cognitiveLevel: cog,
+      thinkingTier: tier,
+      bentukSoal: bentuk,
+      weight: q.weight || 2,
+    };
+  }
+
+  function getSynchronizedMatching(pairs) {
+    if (!Array.isArray(pairs) || pairs.length === 0) {
+      return { rows: [], rightOptions: [], answerKey: '' };
+    }
+    var n = pairs.length;
+    var order = n === 4 ? [1, 3, 0, 2] : pairs.map(function (_, i) { return n > 1 ? (i + 1) % n : 0; });
+    var rightOptions = order.map(function (origIdx, dispIdx) {
+      return {
+        letter: String.fromCharCode(65 + dispIdx),
+        text: (pairs[origIdx] && pairs[origIdx].right) || '',
+        originalIndex: origIdx,
+      };
+    });
+    var rows = pairs.map(function (p, idx) {
+      var matched = rightOptions.find(function (o) { return o.originalIndex === idx; });
+      return {
+        number: idx + 1,
+        left: p.left || '',
+        correctLetter: (matched && matched.letter) || String.fromCharCode(65 + idx),
+        correctRight: p.right || '',
+      };
+    });
+    var answerKey = rows.map(function (r) {
+      return r.number + ' → ' + r.correctLetter + ' (' + r.correctRight + ')';
+    }).join('; ');
+    return { rows: rows, rightOptions: rightOptions, answerKey: answerKey };
+  }
+
+  function renderEditor(main) {
+    var p = state.activeProject;
+    if (!p) {
+      main.innerHTML = '<div class="sl-card">Belum ada proyek yang dibuka. Buka proyek dari menu Proyek Saya atau buat soal baru.</div>';
+      return;
+    }
+    var qs = p.questions || [];
+    main.innerHTML =
+      '<div class="sl-page-head">' +
+        '<div><p class="sl-meta">' + esc(p.subject) + ' · ' + esc(p.level) + (p.grade ? ' · ' + esc(p.grade) : '') + ' · ' + qs.length + ' soal ' + (state.autosaveLabel ? '· ' + esc(state.autosaveLabel) : '') + '</p>' +
+        '<h1 style="font-size:22px;">' + esc(p.title) + '</h1></div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" class="sl-btn ' + (state.editorMode === 'student' ? '' : 'sl-btn-sec') + '" onclick="SoalinApp.setEditorMode(\'student\')">Mode Siswa</button>' +
+          '<button type="button" class="sl-btn ' + (state.editorMode === 'teacher' ? '' : 'sl-btn-sec') + '" onclick="SoalinApp.setEditorMode(\'teacher\')">Mode Guru</button>' +
+          '<button type="button" class="sl-btn ' + (state.editorMode === 'edit' ? '' : 'sl-btn-sec') + '" onclick="SoalinApp.setEditorMode(\'edit\')">Mode Edit</button>' +
+          '<button type="button" class="sl-btn sl-btn-emerald" onclick="SoalinApp.addManualQuestion()">+ Soal Manual</button>' +
+          '<button type="button" class="sl-btn" onclick="SoalinApp.go(\'export\')">Ekspor PDF / DOCX</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:14px;">' +
+        qs.map(function (q, idx) {
+          var cleanPrompt = cleanAsterisks(q.prompt || '');
+          var cleanPassage = cleanAsterisks(q.reading_passage || '');
+          var cleanAns = cleanAsterisks(q.correct_answer || '');
+          var cleanExp = cleanAsterisks(q.explanation || '');
+          var cleanRub = cleanAsterisks(q.rubric || '');
+          var isArPrompt = Boolean(q.is_arabic) || isArabic(cleanPrompt);
+          var pDir = getDir(cleanPrompt);
+          var pAlign = pDir === 'rtl' ? 'right' : 'left';
+          var passDir = getDir(cleanPassage);
+          var passAlign = passDir === 'rtl' ? 'right' : 'left';
+          if (state.editorMode === 'edit') {
+            return '<div class="sl-card" style="display:flex;flex-direction:column;gap:10px;">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">' +
+                '<strong class="sl-mono">Soal #' + q.number + ' (' + esc(q.type) + ')</strong>' +
+                '<div style="display:flex;gap:6px;">' +
+                  '<button type="button" class="sl-btn sl-btn-sec" style="min-height:34px;padding:4px 10px;" onclick="SoalinApp.regenerateQuestion(\'' + q.question_id + '\')">Regenerasi AI</button>' +
+                  '<button type="button" class="sl-btn sl-btn-sec" style="min-height:34px;padding:4px 10px;" onclick="SoalinApp.duplicateQuestion(\'' + q.question_id + '\')">Duplikasi</button>' +
+                  '<button type="button" class="sl-btn sl-btn-sec" style="min-height:34px;padding:4px 10px;" onclick="SoalinApp.saveToBank(\'' + q.question_id + '\')">Simpan ke Bank</button>' +
+                  '<button type="button" class="sl-btn sl-btn-danger" style="min-height:34px;padding:4px 10px;" onclick="SoalinApp.deleteQuestion(\'' + q.question_id + '\')">Hapus</button>' +
+                '</div>' +
+              '</div>' +
+              '<div><label class="sl-label">Pertanyaan</label><textarea class="sl-textarea ' + (isArPrompt ? 'sl-arabic' : '') + '" dir="' + pDir + '" style="text-align:' + pAlign + ';" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'prompt\', this.value)">' + esc(cleanPrompt) + '</textarea></div>' +
+              '<div class="sl-grid-2">' +
+                '<div><label class="sl-label">Kunci Jawaban</label><input class="sl-input" dir="' + getDir(cleanAns) + '" style="text-align:' + (isPureArabic(cleanAns) ? 'right' : 'left') + ';" value="' + esc(cleanAns) + '" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'correct_answer\', this.value)" /></div>' +
+                '<div><label class="sl-label">Bobot Nilai</label><input type="number" class="sl-input" value="' + q.weight + '" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'weight\', Number(this.value))" /></div>' +
+              '</div>' +
+              '<div class="sl-grid-2">' +
+                '<div><label class="sl-label">Tujuan Pembelajaran (TP · Kurikulum Merdeka)</label><input class="sl-input" value="' + esc(q.tujuan_pembelajaran || buildKisiKisiRow(q, p).tp) + '" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'tujuan_pembelajaran\', this.value)" /></div>' +
+                '<div><label class="sl-label">Indikator Soal (Kisi-Kisi)</label><input class="sl-input" value="' + esc(q.indikator_soal || buildKisiKisiRow(q, p).indikator) + '" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'indikator_soal\', this.value)" /></div>' +
+              '</div>' +
+              '<div><label class="sl-label">Pembahasan</label><textarea class="sl-textarea" dir="' + getDir(cleanExp) + '" style="text-align:' + (isPureArabic(cleanExp) ? 'right' : 'left') + ';" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'explanation\', this.value)">' + esc(cleanExp) + '</textarea></div>' +
+              '<div><label class="sl-label">Unggah Gambar ke Drive (Opsional)</label><input type="file" accept="image/*" onchange="SoalinApp.uploadQuestionImage(\'' + q.question_id + '\', this)" /></div>' +
+            '</div>';
+          }
+          return '<div class="sl-card" dir="' + pDir + '" style="text-align:' + pAlign + ';">' +
+            '<div dir="ltr" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;text-align:left;">' +
+              '<span class="sl-meta sl-mono">Soal ' + q.number + ' · ' + esc(q.type) + ' · ' + esc(q.cognitive_level) + ' · ' + q.weight + ' poin</span>' +
+              (state.editorMode === 'teacher'
+                ? '<div style="display:flex;gap:6px;">' +
+                    '<button type="button" class="sl-btn sl-btn-sec" style="min-height:32px;padding:2px 10px;font-size:12px;" onclick="SoalinApp.regenerateQuestion(\'' + q.question_id + '\')">Regenerasi</button>' +
+                    '<button type="button" class="sl-btn sl-btn-sec" style="min-height:32px;padding:2px 10px;font-size:12px;" onclick="SoalinApp.saveToBank(\'' + q.question_id + '\')">+ Bank Soal</button>' +
+                  '</div>'
+                : '') +
+            '</div>' +
+            (cleanPassage ? '<div style="padding:10px 12px;background:#F8FAFC;border:1px solid var(--sl-border);border-radius:8px;margin-bottom:10px;text-align:' + passAlign + ';" dir="' + passDir + '" class="' + (isArabic(cleanPassage) ? 'sl-arabic' : '') + '">' + esc(cleanPassage) + '</div>' : '') +
+            '<div dir="' + pDir + '" class="' + (isArPrompt ? 'sl-arabic' : '') + '" style="font-weight:600;margin-bottom:10px;text-align:' + pAlign + ';">' + esc(cleanPrompt) + '</div>' +
+            (q.svg_markup ? '<div style="margin:10px 0;text-align:center;">' + q.svg_markup + '</div>' : '') +
+            (q.image_url ? '<div style="margin:10px 0;text-align:center;"><img src="' + esc(q.image_url) + '" alt="' + esc(q.visual_caption) + '" style="max-width:100%;max-height:280px;border-radius:8px;" /></div>' : '') +
+            (Array.isArray(q.options) && q.options.length > 0
+              ? '<div style="display:flex;flex-direction:column;gap:6px;">' +
+                  q.options.map(function (o) {
+                    var oTxt = cleanAsterisks(o.text || '');
+                    var optAr = isArabic(oTxt);
+                    var optPureAr = isPureArabic(oTxt);
+                    var oRowRtl = isPureArabic((o.label || '') + ' ' + oTxt) || (pDir === 'rtl' && optPureAr);
+                    var isC = state.editorMode === 'teacher' && o.isCorrect;
+                    return '<div dir="' + (oRowRtl ? 'rtl' : 'ltr') + '" class="' + (optAr ? 'sl-arabic' : '') + '" style="text-align:' + (oRowRtl ? 'right' : 'left') + ';padding:8px 12px;border:1px solid ' + (isC ? '#6EE7B7' : 'var(--sl-border)') + ';background:' + (isC ? '#ECFDF5' : '#FFFFFF') + ';border-radius:8px;"><strong>' + esc(o.label) + '.</strong> ' + (optPureAr && !oRowRtl ? '<span dir="rtl" style="unicode-bidi:isolate;">' + esc(oTxt) + '</span>' : esc(oTxt)) + '</div>';
+                  }).join('') +
+                '</div>'
+              : '') +
+            (q.type === 'menjodohkan' && Array.isArray(q.matching_pairs) && q.matching_pairs.length > 0
+              ? (function () {
+                  var sync = getSynchronizedMatching(q.matching_pairs);
+                  var lastLetter = (sync.rightOptions[sync.rightOptions.length - 1] && sync.rightOptions[sync.rightOptions.length - 1].letter) || 'D';
+                  return '<div dir="ltr" style="text-align:left;background:#F8FAFC;border:1px solid var(--sl-border);border-radius:10px;padding:12px;">' +
+                    '<div style="font-size:12px;color:#334155;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px 10px;margin-bottom:10px;">Pasangkan <strong>Kolom Kiri (1–' + sync.rows.length + ')</strong> dengan <strong>Pilihan Kanan (A–' + lastLetter + ')</strong>, lalu tuliskan jawaban pada kotak isian yang luas di bawah ini.</div>' +
+                    '<div class="sl-grid-2" style="margin-bottom:10px;">' +
+                      '<div style="background:#FFF;border:1px solid var(--sl-border);border-radius:8px;padding:10px;"><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;margin-bottom:6px;">Kolom Kiri</div>' +
+                        sync.rows.map(function (r) {
+                          var rPure = isPureArabic(r.left);
+                          return '<div dir="' + (rPure ? 'rtl' : 'ltr') + '" class="' + (isArabic(r.left) ? 'sl-arabic' : '') + '" style="text-align:' + (rPure ? 'right' : 'left') + ';padding:4px 0;border-bottom:1px dashed var(--sl-border);"><strong>' + r.number + '.</strong> ' + esc(r.left) + '</div>';
+                        }).join('') +
+                      '</div>' +
+                      '<div style="background:#FFF;border:1px solid var(--sl-border);border-radius:8px;padding:10px;"><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;margin-bottom:6px;">Pilihan Kanan</div>' +
+                        sync.rightOptions.map(function (o) {
+                          var oPure = isPureArabic(o.text);
+                          return '<div dir="' + (oPure ? 'rtl' : 'ltr') + '" class="' + (isArabic(o.text) ? 'sl-arabic' : '') + '" style="text-align:' + (oPure ? 'right' : 'left') + ';padding:4px 0;border-bottom:1px dashed var(--sl-border);"><strong>' + o.letter + '.</strong> ' + esc(o.text) + '</div>';
+                        }).join('') +
+                      '</div>' +
+                    '</div>' +
+                    '<div class="sl-grid-2">' +
+                      sync.rows.map(function (r) {
+                        var isT = state.editorMode === 'teacher';
+                        return '<div style="background:#FFF;border:1px solid #CBD5E1;border-radius:8px;padding:8px 10px;">' +
+                          '<div style="font-size:11.5px;font-weight:600;color:#475569;margin-bottom:4px;">Jawaban No. ' + r.number + ':</div>' +
+                          '<div style="min-height:50px;border:1.5px dashed ' + (isT ? '#10B981' : '#94A3B8') + ';background:' + (isT ? '#ECFDF5' : '#FFFFFF') + ';border-radius:6px;padding:8px 10px;font-weight:' + (isT ? '700' : '400') + ';color:' + (isT ? '#065F46' : '#64748B') + ';">' + (isT ? esc(r.correctLetter + ' — ' + r.correctRight) : '') + '</div>' +
+                        '</div>';
+                      }).join('') +
+                    '</div>' +
+                  '</div>';
+                })()
+              : '') +
+            (q.type === 'menebalkan_mewarnai_arab'
+              ? (function () {
+                  var arBig = cleanAsterisks(q.arabic_prompt || q.reading_passage || q.correct_answer || '');
+                  return '<div dir="ltr" style="border:1.5px solid #CBD5E1;border-radius:12px;padding:12px 16px;background:#FFF;text-align:left;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--sl-border);padding-bottom:6px;margin-bottom:10px;">' +
+                      '<span style="font-size:11px;font-weight:700;color:var(--sl-navy);text-transform:uppercase;">Lembar Kerja Besar A4 (2 Soal / Halaman)</span>' +
+                      (q.reading_translation ? '<span style="font-size:11.5px;font-weight:600;color:#065F46;background:#ECFDF5;padding:2px 8px;border-radius:6px;">Arti: ' + esc(q.reading_translation) + '</span>' : '') +
+                    '</div>' +
+                    '<div style="border:1px dashed #94A3B8;border-radius:10px;padding:10px 14px;background:#F8FAFC;margin-bottom:10px;">' +
+                      '<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:6px;">1. Tebalkan Garis Kata / Kalimat Arab (التَّتَبُّعُ):</div>' +
+                      '<div class="sl-arabic-khat-guides" style="min-height:110px;background-color:#FFF;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:8px 14px;text-align:center;">' +
+                        '<span dir="rtl" class="sl-arabic-trace">' + esc(arBig) + '</span>' +
+                      '</div>' +
+                    '</div>' +
+                    '<div style="border:2px solid #94A3B8;border-radius:10px;padding:10px 14px;background:#FFF;">' +
+                      '<div style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;margin-bottom:6px;">2. Warnailah Kata / Kalimat Arab Berikut (التَّلْوِينُ):</div>' +
+                      '<div style="min-height:130px;border:1px dashed #E2E8F0;border-radius:8px;background:#FFF;display:flex;align-items:center;justify-content:center;padding:8px 14px;text-align:center;">' +
+                        '<span dir="rtl" class="sl-arabic-color">' + esc(arBig) + '</span>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>';
+                })()
+              : '') +
+            (state.editorMode === 'teacher'
+              ? '<div dir="ltr" style="text-align:left;margin-top:12px;padding:12px;border-radius:8px;background:#ECFDF5;border:1px solid #A7F3D0;font-size:13px;color:#065F46;">' +
+                  '<div dir="' + getDir(cleanAns) + '" style="text-align:' + (isPureArabic(cleanAns) ? 'right' : 'left') + ';"><strong>Kunci:</strong> ' + esc(cleanAns) + '</div>' +
+                  (cleanExp ? '<div dir="' + getDir(cleanExp) + '" style="text-align:' + (isPureArabic(cleanExp) ? 'right' : 'left') + ';margin-top:4px;"><strong>Pembahasan:</strong> ' + esc(cleanExp) + '</div>' : '') +
+                  (cleanRub ? '<div style="margin-top:4px;"><strong>Rubrik:</strong> ' + esc(cleanRub) + '</div>' : '') +
+                '</div>'
+              : '') +
+          '</div>';
+        }).join('') +
+      '</div>';
+  }
+
+  function renderKisiKisi(main) {
+    var p = state.activeProject;
+    if (!p || !Array.isArray(p.questions) || p.questions.length === 0) {
+      main.innerHTML = '<div class="sl-card">Buka sebuah proyek terlebih dahulu untuk melihat Kisi-Kisi Kurikulum Merdeka.</div>';
+      return;
+    }
+    var fase = getFaseKurmer(p.level, p.grade);
+    var firstCp = buildKisiKisiRow(p.questions[0], p).cp;
+    main.innerHTML =
+      '<div class="sl-page-head">' +
+        '<div><p class="sl-meta">' + esc(p.subject) + ' · ' + esc(p.level) + (p.grade ? ' · ' + esc(p.grade) : '') + ' (' + esc(fase) + ') · ' + p.questions.length + ' soal ' + (state.autosaveLabel ? '· ' + esc(state.autosaveLabel) : '') + '</p>' +
+        '<h1 style="font-size:22px;">Kisi-Kisi Penulisan Soal (Kurikulum Merdeka)</h1></div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.go(\'editor\')">Kembali ke Editor</button>' +
+          '<button type="button" class="sl-btn sl-btn-emerald" onclick="SoalinApp.go(\'export\')">Ekspor Kisi-Kisi (PDF/DOCX)</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sl-card" style="margin-bottom:14px;background:#EFF6FF;border-color:#BFDBFE;font-size:13px;color:#1E3A8A;">' +
+        '<strong>Capaian Pembelajaran (CP · ' + esc(fase) + '):</strong> ' + esc(firstCp) +
+      '</div>' +
+      '<div class="sl-card sl-table-wrap">' +
+        '<table class="sl-table">' +
+          '<thead><tr><th style="width:42px;">No</th><th style="width:28%;">Tujuan Pembelajaran (TP)</th><th style="width:16%;">Lingkup Materi</th><th style="width:36%;">Indikator Soal</th><th style="width:14%;">Level &amp; Bentuk</th><th>Bobot</th></tr></thead>' +
+          '<tbody>' +
+            p.questions.map(function (q) {
+              var r = buildKisiKisiRow(q, p);
+              return '<tr>' +
+                '<td class="sl-mono"><strong>' + r.number + '</strong></td>' +
+                '<td><textarea class="sl-textarea" style="min-height:56px;font-size:12px;" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'tujuan_pembelajaran\', this.value)">' + esc(r.tp) + '</textarea></td>' +
+                '<td><input class="sl-input" style="min-height:36px;font-size:12px;" value="' + esc(r.materi) + '" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'topic_tag\', this.value)" /></td>' +
+                '<td><textarea class="sl-textarea" style="min-height:56px;font-size:12px;" onchange="SoalinApp.updateQuestionField(\'' + q.question_id + '\', \'indikator_soal\', this.value)">' + esc(r.indikator) + '</textarea></td>' +
+                '<td><strong>' + esc(r.cognitiveLevel) + '</strong> (' + esc(r.thinkingTier) + ')<div class="sl-meta">' + esc(r.bentukSoal) + '</div></td>' +
+                '<td class="sl-mono"><strong>' + r.weight + '</strong></td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>' +
+      '</div>';
+  }
+
+  function renderProjects(main) {
+    main.innerHTML =
+      '<div class="sl-page-head"><div><p class="sl-meta">Google Sheets · Projects</p><h1 style="font-size:24px;">Proyek Saya</h1></div>' +
+      '<button type="button" class="sl-btn" onclick="SoalinApp.go(\'create\')">+ Proyek Baru</button></div>' +
+      '<div class="sl-grid-2">' +
+        (state.projects.length === 0
+          ? '<div class="sl-card">Belum ada proyek tersimpan.</div>'
+          : state.projects.map(function (p) {
+              return '<div class="sl-card">' +
+                '<div class="sl-meta">' + esc(p.level) + ' · ' + esc(p.subject) + ' · ' + esc(p.language) + ' · ' + p.question_count + ' soal</div>' +
+                '<h3 style="margin-top:6px;font-size:16px;">' + esc(p.title) + '</h3>' +
+                '<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">' +
+                  '<button type="button" class="sl-btn" style="min-height:36px;" onclick="SoalinApp.openProject(\'' + esc(p.project_id) + '\')">Buka Editor</button>' +
+                  '<button type="button" class="sl-btn sl-btn-sec" style="min-height:36px;" onclick="SoalinApp.duplicateProject(\'' + esc(p.project_id) + '\')">Duplikasi</button>' +
+                  '<button type="button" class="sl-btn sl-btn-danger" style="min-height:36px;" onclick="SoalinApp.deleteProject(\'' + esc(p.project_id) + '\')">Hapus</button>' +
+                '</div>' +
+              '</div>';
+            }).join('')) +
+      '</div>';
+  }
+
+  function renderBank(main) {
+    var selectedCount = Object.keys(state.selectedBankIds).filter(function (id) { return state.selectedBankIds[id]; }).length;
+    main.innerHTML =
+      '<div class="sl-page-head"><div><p class="sl-meta">Google Sheets · QuestionBank</p><h1 style="font-size:24px;">Bank Soal Pribadi</h1></div>' +
+      (selectedCount > 0
+        ? '<button type="button" class="sl-btn sl-btn-emerald" onclick="SoalinApp.mergeSelectedBank()">Gabungkan ' + selectedCount + ' Soal ke Proyek Baru</button>'
+        : '') +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:12px;">' +
+        (state.bankItems.length === 0
+          ? '<div class="sl-card">Bank soal masih kosong.</div>'
+          : state.bankItems.map(function (b) {
+              var checked = Boolean(state.selectedBankIds[b.bank_id]);
+              return '<div class="sl-card">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">' +
+                  '<label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;">' +
+                    '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="SoalinApp.toggleBankSelect(\'' + b.bank_id + '\', this.checked)" />' +
+                    esc(b.subject) + ' · ' + esc(b.level) + ' · ' + esc(b.type) +
+                  '</label>' +
+                  '<div style="display:flex;gap:6px;">' +
+                    '<button type="button" class="sl-btn sl-btn-sec" style="min-height:32px;padding:2px 10px;" onclick="SoalinApp.toggleBankFav(\'' + b.bank_id + '\')">' + (b.is_favorite ? 'Favorit ★' : 'Favorit ☆') + '</button>' +
+                    '<button type="button" class="sl-btn sl-btn-danger" style="min-height:32px;padding:2px 10px;" onclick="SoalinApp.deleteBank(\'' + b.bank_id + '\')">Hapus</button>' +
+                  '</div>' +
+                '</div>' +
+                '<div style="margin-top:8px;font-weight:600;">' + esc(b.question && b.question.prompt) + '</div>' +
+                '<div class="sl-meta" style="margin-top:4px;color:#047857;">Kunci: ' + esc(b.question && b.question.correct_answer) + '</div>' +
+              '</div>';
+            }).join('')) +
+      '</div>';
+  }
+
+  function renderExport(main) {
+    var p = state.activeProject;
+    if (!p) {
+      main.innerHTML = '<div class="sl-card">Buka sebuah proyek terlebih dahulu untuk mengekspor dokumen PDF atau DOCX.</div>';
+      return;
+    }
+    var h = p.header || {};
+    main.innerHTML =
+      '<div class="sl-page-head"><div><p class="sl-meta">Google Docs + Google Drive Exporter</p><h1 style="font-size:24px;">Ekspor Dokumen Resmi</h1></div></div>' +
+      '<div class="sl-grid-2">' +
+        '<div class="sl-card" style="display:flex;flex-direction:column;gap:10px;">' +
+          '<h2 style="font-size:16px;">Identitas Lembaga &amp; Ujian</h2>' +
+          '<div><label class="sl-label">Nama Sekolah / Madrasah</label><input class="sl-input" id="ex-inst" value="' + esc(h.institutionName || '') + '" /></div>' +
+          '<div><label class="sl-label">Alamat Sekolah</label><input class="sl-input" id="ex-addr" value="' + esc(h.institutionAddress || '') + '" /></div>' +
+          '<div><label class="sl-label">Judul Ujian</label><input class="sl-input" id="ex-title" value="' + esc(h.examTitle || 'UJIAN AKHIR SEMESTER') + '" /></div>' +
+          '<div class="sl-grid-2">' +
+            '<div><label class="sl-label">Nama Guru</label><input class="sl-input" id="ex-teacher" value="' + esc(h.teacherName || '') + '" /></div>' +
+            '<div><label class="sl-label">Alokasi Waktu</label><input class="sl-input" id="ex-time" value="' + esc(h.timeAllocation || '90 Menit') + '" /></div>' +
+          '</div>' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.saveHeaderForExport()">Simpan Identitas Dokumen</button>' +
+        '</div>' +
+        '<div class="sl-card" style="display:flex;flex-direction:column;gap:12px;">' +
+          '<h2 style="font-size:16px;">Format &amp; Jenis Dokumen (Padat Hemat Kertas)</h2>' +
+          '<div><label class="sl-label">Isi Dokumen</label><select class="sl-select" id="ex-mode">' +
+            '<option value="questions_only">Soal Tanpa Kunci Jawaban (Siswa)</option>' +
+            '<option value="official_exam_sheet">Lembar Ujian Resmi (Siswa)</option>' +
+            '<option value="answer_key">Kunci Jawaban Saja</option>' +
+            '<option value="explanations">Kunci Jawaban &amp; Pembahasan</option>' +
+            '<option value="kisi_kisi_only">Kisi-Kisi Soal (Kurikulum Merdeka)</option>' +
+            '<option value="complete" selected>Paket Lengkap (Soal + Kunci + Kisi-Kisi)</option>' +
+          '</select></div>' +
+          '<label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#334155;cursor:pointer;">' +
+            '<input type="checkbox" id="ex-compact" checked /> Mode Cetak Padat (Hemat Kertas &amp; Margin Tipis A4)' +
+          '</label>' +
+          '<label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#334155;cursor:pointer;">' +
+            '<input type="checkbox" id="ex-include-kisi" checked /> Sertakan Kisi-Kisi Kurikulum Merdeka (pada Paket Lengkap)' +
+          '</label>' +
+          '<div><label class="sl-label">Format Output (Biner Valid via Google Docs)</label><select class="sl-select" id="ex-format">' +
+            '<option value="pdf">File PDF (.pdf)</option>' +
+            '<option value="docx">Microsoft Word (.docx)</option>' +
+            '<option value="gdoc">Google Docs (Drive)</option>' +
+          '</select></div>' +
+          '<button type="button" class="sl-btn" onclick="SoalinApp.runExport()">Ekspor &amp; Simpan ke Drive</button>' +
+          '<div id="sl-export-result"></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderAdmin(main) {
+    if (!state.user || state.user.role !== 'Administrator') {
+      main.innerHTML = '<div class="sl-card">Akses ditolak. Halaman ini khusus Administrator.</div>';
+      return;
+    }
+    var adm = state.adminData;
+    if (!adm) {
+      main.innerHTML = '<div class="sl-card">Memuat data Admin Panel...</div>';
+      return;
+    }
+    var pc = adm.publicConfig;
+    main.innerHTML =
+      '<div class="sl-page-head"><div><p class="sl-meta">Kontrol Sistem, Google AI Studio (Gemini) &amp; Pengguna</p><h1 style="font-size:24px;">Admin Panel</h1></div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.adminTest(\'admin_init_db\')">Inisialisasi DB Sheets</button>' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.adminTest(\'admin_test_ai\')">Uji Koneksi AI Studio</button>' +
+          '<button type="button" class="sl-btn" onclick="SoalinApp.adminLoadModels()">Muat Model Gemini</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sl-grid-2">' +
+        '<div class="sl-card" style="display:flex;flex-direction:column;gap:10px;">' +
+          '<h2 style="font-size:16px;">Konfigurasi Google AI Studio &amp; Kuota (Non-Rahasia)</h2>' +
+          '<div class="sl-meta">GEMINI_API_KEY tersimpan aman di Script Properties GAS dan tidak pernah dikirim ke browser.</div>' +
+          '<div><label class="sl-label">Model Gemini Aktif (' + esc(pc.activeModel || 'gemini-4-hydrogen') + ')</label>' +
+            '<select class="sl-select" id="adm-model">' +
+              (state.adminModels.length > 0
+                ? state.adminModels.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === pc.activeModel ? ' selected' : '') + '>' + esc(m.id) + '</option>'; }).join('')
+                : '<option value="' + esc(pc.activeModel || 'gemini-4-hydrogen') + '">' + esc(pc.activeModel || 'gemini-4-hydrogen') + '</option>') +
+            '</select>' +
+          '</div>' +
+          '<div class="sl-grid-2">' +
+            '<div><label class="sl-label">Maks. Soal / Paket</label><input type="number" class="sl-input" id="adm-maxq" value="' + pc.maxQuestions + '" /></div>' +
+            '<div><label class="sl-label">Kuota Harian Default</label><input type="number" class="sl-input" id="adm-daily" value="' + pc.dailyLimit + '" /></div>' +
+          '</div>' +
+          '<button type="button" class="sl-btn" onclick="SoalinApp.saveAdminConfig()">Simpan Pengaturan Model &amp; Kuota</button>' +
+        '</div>' +
+        '<div class="sl-card">' +
+          '<h2 style="font-size:16px;margin-bottom:10px;">Manajemen Akun Pengguna (' + adm.users.length + ')</h2>' +
+          '<div class="sl-table-wrap"><table class="sl-table"><thead><tr><th>Email / Nama</th><th>Role</th><th>Kuota</th><th>Status</th></tr></thead><tbody>' +
+            adm.users.map(function (u) {
+              return '<tr>' +
+                '<td><strong>' + esc(u.name) + '</strong><div class="sl-meta">' + esc(u.email) + '</div></td>' +
+                '<td>' + esc(u.role) + '</td>' +
+                '<td class="sl-mono">' + u.used_today + '/' + u.daily_quota + '</td>' +
+                '<td><button type="button" class="sl-btn sl-btn-sec" style="min-height:30px;padding:2px 8px;font-size:11px;" onclick="SoalinApp.toggleUserStatus(\'' + u.user_id + '\', \'' + (u.status === 'active' ? 'disabled' : 'active') + '\')">' + esc(u.status) + '</button></td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody></table></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderSimplePage(main) {
+    if (state.page === 'history') {
+      main.innerHTML =
+        '<div class="sl-page-head"><h1>Riwayat Aktivitas</h1></div>' +
+        '<div class="sl-card">' +
+          (state.historyItems.length === 0
+            ? '<p class="sl-meta">Belum ada riwayat.</p>'
+            : state.historyItems.map(function (h) {
+                return '<div style="padding:10px 0;border-bottom:1px solid var(--sl-border);"><strong>' + esc(h.action) + '</strong> · ' + esc(h.summary) + '<div class="sl-meta">' + new Date(h.created_at).toLocaleString('id-ID') + '</div></div>';
+              }).join('')) +
+        '</div>';
+    } else if (state.page === 'templates') {
+      main.innerHTML =
+        '<div class="sl-page-head"><h1>Template Soal</h1></div>' +
+        '<div class="sl-grid-2">' +
+          state.templates.map(function (t) {
+            return '<div class="sl-card"><div class="sl-meta">' + esc(t.category) + ' · ' + esc(t.level) + ' · ' + esc(t.language) + '</div><h3 style="margin-top:6px;">' + esc(t.name) + '</h3><p class="sl-meta" style="margin-top:4px;">' + esc(t.title) + '</p><button type="button" class="sl-btn" style="margin-top:12px;" onclick="SoalinApp.applyTemplate(\'' + t.template_id + '\')">Gunakan Template</button></div>';
+          }).join('') +
+        '</div>';
+    } else if (state.page === 'profile') {
+      main.innerHTML =
+        '<div class="sl-page-head"><h1>Profil Pengguna</h1></div>' +
+        '<div class="sl-card" style="max-width:520px;display:flex;flex-direction:column;gap:12px;">' +
+          '<div><label class="sl-label">Nama Lengkap</label><input class="sl-input" id="pr-name" value="' + esc(state.user.name) + '" /></div>' +
+          '<div><label class="sl-label">Nama Lembaga / Sekolah</label><input class="sl-input" id="pr-inst" value="' + esc(state.user.institution || '') + '" /></div>' +
+          '<div><label class="sl-label">NIP / NIDN</label><input class="sl-input" id="pr-nip" value="' + esc(state.user.nip || '') + '" /></div>' +
+          '<button type="button" class="sl-btn" onclick="SoalinApp.saveProfile()">Simpan Profil</button>' +
+        '</div>';
+    } else if (state.page === 'settings') {
+      main.innerHTML =
+        '<div class="sl-page-head"><h1>Pengaturan Koneksi GAS</h1></div>' +
+        '<div class="sl-card" style="max-width:600px;display:flex;flex-direction:column;gap:12px;">' +
+          '<div><label class="sl-label">URL Web App Google Apps Script</label><input class="sl-input" id="set-gas-url" value="' + esc(state.gasUrl) + '" /></div>' +
+          '<button type="button" class="sl-btn" onclick="SoalinApp.saveGasUrlFromInput(\'set-gas-url\')">Simpan &amp; Uji Koneksi</button>' +
+        '</div>';
+    }
+  }
+
+  function getDefaultRpp() {
+    var f = state.form || {};
+    var p = state.activeProject;
+    var subject = (p && p.subject) || f.subject || 'Bahasa Arab';
+    var level = (p && p.level) || f.level || 'SMA';
+    var grade = (p && p.grade) || f.grade || 'Kelas 11';
+    var topic = cleanAsterisks((p && p.title) || f.title || 'Materi Pembelajaran');
+    var subs = (p && Array.isArray(p.subtitles) && p.subtitles.length ? p.subtitles : (f.subtitles && f.subtitles.length ? f.subtitles : [topic])).map(cleanAsterisks);
+    var fase = getFaseKurmer(level, grade);
+    return {
+      institutionName: (p && p.header && p.header.institutionName) || 'SEKOLAH ISLAM TERPADU PLUS CORDOVA (SD–SMA)',
+      institutionAddress: (p && p.header && p.header.institutionAddress) || 'Sekolah Islam Terpadu Plus Cordova · Jenjang SD–SMA',
+      teacherName: (state.user && state.user.name) || 'Ustdz Mulyadi, S.T.',
+      teacherNip: '-',
+      principalName: 'Kepala Sekolah SIT PLUS CORDOVA',
+      principalNip: '-',
+      subject: subject,
+      level: level,
+      gradeClass: grade,
+      fase: fase,
+      semester: 'Ganjil (I)',
+      academicYear: '2025/2026',
+      topic: topic,
+      subtopics: subs,
+      alokasiWaktu: '2 x 40 Menit (1 Pertemuan)',
+      jumlahPertemuan: '1 Pertemuan',
+      modelPembelajaran: 'Discovery Learning / Problem Based Learning (Aktif & Kontekstual)',
+      targetPesertaDidik: 'Peserta didik reguler ' + grade,
+      kompetensiAwal: 'Peserta didik telah memiliki pengetahuan dasar mengenai ' + topic + ' pada mata pelajaran ' + subject + '.',
+      profilPelajarPancasila: ['Beriman, Bertakwa kepada Tuhan YME & Berakhlak Mulia', 'Bernalar Kritis', 'Mandiri', 'Bergotong Royong'],
+      saranaPrasarana: 'Papan tulis, proyektor LCD, LKPD SIT PLUS CORDOVA, buku teks, dan media belajar relevan.',
+      capaianPembelajaran: 'Pada akhir ' + fase + ', peserta didik menguasai kompetensi materi ' + topic + ' pada mata pelajaran ' + subject + ' secara terstruktur dan aplikatif.',
+      tujuanPembelajaran: [
+        'Peserta didik mampu memahami konsep pokok materi ' + topic + ' dengan benar.',
+        'Peserta didik mampu mempraktikkan serta menganalisis submateri ' + (subs[0] || topic) + ' secara mandiri dan kolaboratif.'
+      ],
+      pemahamanBermakna: 'Pemahaman tentang ' + topic + ' melatih keterampilan berpikir sistematis dan penerapan nilai islami.',
+      pertanyaanPemantik: [
+        'Apa keterkaitan materi ' + topic + ' dengan aktivitas belajar kita sehari-hari?',
+        'Bagaimana cara menerapkan konsep ' + (subs[0] || topic) + ' dengan tepat?'
+      ],
+      kegiatanPembelajaran: {
+        pendahuluan: {
+          durasi: '10 Menit',
+          langkah: [
+            'Guru membuka kelas dengan salam, doa, dan memeriksa kehadiran peserta didik.',
+            'Guru melakukan apersepsi dan menyampaikan tujuan pembelajaran terkait ' + topic + '.'
+          ]
+        },
+        inti: {
+          durasi: '60 Menit',
+          langkah: [
+            'Eksplorasi: Peserta didik mengamati stimulus materi dan berdiskusi membahas ' + subs.join(', ') + '.',
+            'Elaborasi: Peserta didik mengerjakan LKPD/soal latihan secara terstruktur.',
+            'Konfirmasi: Presentasi hasil belajar peserta didik dan penguatan konsep oleh guru.'
+          ]
+        },
+        penutup: {
+          durasi: '10 Menit',
+          langkah: [
+            'Guru dan peserta didik menyimpulkan intisari pembelajaran dan melakukan refleksi singkat.',
+            'Menutup pembelajaran dengan doa penutup majelis dan salam.'
+          ]
+        }
+      },
+      asesmen: {
+        diagnostik: 'Tanya jawab lisan awal pertemuan terkait kesiapan materi ' + topic + '.',
+        formatif: 'Observasi diskusi dan penilaian LKPD selama pembelajaran.',
+        sumatif: 'Evaluasi tertulis menggunakan instrumen soal dan rubrik SIT PLUS CORDOVA.'
+      },
+      pengayaanRemedial: {
+        pengayaan: 'Tugas eksplorasi tingkat lanjut / soal HOTS bagi peserta didik tuntas.',
+        remedial: 'Pendampingan ulang konsep dasar dan latihan terbimbing.'
+      },
+      refleksi: {
+        pendidik: 'Bagian materi mana yang perlu penguatan pada pertemuan selanjutnya?',
+        pesertaDidik: 'Apa hal penting yang saya pelajari hari ini dan apa yang masih perlu dilatih?'
+      },
+      glosarium: [
+        { term: topic, definition: 'Topik utama pembelajaran pada Modul Ajar Kurikulum Merdeka.' },
+        { term: 'Capaian Pembelajaran (CP)', definition: 'Kompetensi minimum fase pada Kurikulum Merdeka.' }
+      ],
+      daftarPustaka: 'Kemendikbudristek. Panduan Pembelajaran & Asesmen Kurikulum Merdeka. Modul Internal SIT PLUS CORDOVA.'
+    };
+  }
+
+  function buildRppSheetHtml(r) {
+    var kp = r.kegiatanPembelajaran || { pendahuluan: {}, inti: {}, penutup: {} };
+    var as = r.asesmen || {};
+    var pr = r.pengayaanRemedial || {};
+    var rf = r.refleksi || {};
+    function ol(arr) {
+      return '<ol style="margin:3px 0 0;padding-left:18px;">' + (arr || []).map(function (st) {
+        return '<li dir="' + getDir(st) + '" style="text-align:' + (isPureArabic(st) ? 'right' : 'left') + ';margin-bottom:2px;">' + esc(st) + '</li>';
+      }).join('') + '</ol>';
+    }
+    return '<div class="sl-card" style="padding:22px;font-size:12.5px;line-height:1.45;">' +
+      '<div style="text-align:center;border-bottom:2px solid #0F294A;padding-bottom:6px;margin-bottom:10px;">' +
+        '<div style="font-size:15px;font-weight:800;color:#0F294A;text-transform:uppercase;">' + esc(r.institutionName) + '</div>' +
+        '<div style="font-size:11px;color:#475569;">' + esc(r.institutionAddress) + '</div>' +
+      '</div>' +
+      '<div style="text-align:center;margin-bottom:10px;"><strong style="font-size:14px;color:#0F294A;">MODUL AJAR / RPP KURIKULUM MERDEKA</strong><div>' + esc(r.subject) + ' — ' + esc(r.topic) + '</div></div>' +
+      '<table class="sl-table" style="border:1px solid #CBD5E1;margin-bottom:10px;"><tbody>' +
+        '<tr><td style="border:1px solid #CBD5E1;padding:5px 8px;"><strong>Penyusun:</strong> ' + esc(r.teacherName) + '</td><td style="border:1px solid #CBD5E1;padding:5px 8px;"><strong>Jenjang/Kelas/Fase:</strong> ' + esc(r.level) + ' · ' + esc(r.gradeClass) + ' (' + esc(r.fase) + ')</td></tr>' +
+        '<tr><td style="border:1px solid #CBD5E1;padding:5px 8px;"><strong>Alokasi Waktu:</strong> ' + esc(r.alokasiWaktu) + '</td><td style="border:1px solid #CBD5E1;padding:5px 8px;"><strong>Model:</strong> ' + esc(r.modelPembelajaran) + '</td></tr>' +
+      '</tbody></table>' +
+      '<div style="margin-bottom:8px;"><strong>Kompetensi Awal:</strong> ' + esc(r.kompetensiAwal) + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Profil Pelajar Pancasila (P5):</strong> ' + (r.profilPelajarPancasila || []).map(esc).join(' · ') + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Sarana &amp; Prasarana:</strong> ' + esc(r.saranaPrasarana) + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Capaian Pembelajaran (CP):</strong> ' + esc(r.capaianPembelajaran) + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Tujuan Pembelajaran (TP):</strong>' + ol(r.tujuanPembelajaran) + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Pemahaman Bermakna:</strong> ' + esc(r.pemahamanBermakna) + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Pertanyaan Pemantik:</strong>' + ol(r.pertanyaanPemantik) + '</div>' +
+      '<table class="sl-table" style="border:1px solid #CBD5E1;margin-bottom:10px;"><thead><tr><th style="width:18%;border:1px solid #CBD5E1;">Tahap</th><th style="border:1px solid #CBD5E1;">Langkah Pembelajaran</th></tr></thead><tbody>' +
+        '<tr><td style="border:1px solid #CBD5E1;vertical-align:top;"><strong>Pendahuluan</strong><div class="sl-meta">' + esc((kp.pendahuluan && kp.pendahuluan.durasi) || '10 Menit') + '</div></td><td style="border:1px solid #CBD5E1;">' + ol(kp.pendahuluan && kp.pendahuluan.langkah) + '</td></tr>' +
+        '<tr><td style="border:1px solid #CBD5E1;vertical-align:top;"><strong>Inti</strong><div class="sl-meta">' + esc((kp.inti && kp.inti.durasi) || '60 Menit') + '</div></td><td style="border:1px solid #CBD5E1;">' + ol(kp.inti && kp.inti.langkah) + '</td></tr>' +
+        '<tr><td style="border:1px solid #CBD5E1;vertical-align:top;"><strong>Penutup</strong><div class="sl-meta">' + esc((kp.penutup && kp.penutup.durasi) || '10 Menit') + '</div></td><td style="border:1px solid #CBD5E1;">' + ol(kp.penutup && kp.penutup.langkah) + '</td></tr>' +
+      '</tbody></table>' +
+      '<div style="margin-bottom:4px;"><strong>Asesmen:</strong> Diagnostik: ' + esc(as.diagnostik) + ' | Formatif: ' + esc(as.formatif) + ' | Sumatif: ' + esc(as.sumatif) + '</div>' +
+      '<div style="margin-bottom:4px;"><strong>Pengayaan &amp; Remedial:</strong> ' + esc(pr.pengayaan) + ' / ' + esc(pr.remedial) + '</div>' +
+      '<div style="margin-bottom:8px;"><strong>Refleksi:</strong> Guru: ' + esc(rf.pendidik) + ' | Siswa: ' + esc(rf.pesertaDidik) + '</div>' +
+      '<div style="margin-bottom:10px;"><strong>Daftar Pustaka:</strong> ' + esc(r.daftarPustaka) + '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px;text-align:center;">' +
+        '<div>Mengetahui,<br/>Kepala Sekolah<div style="height:44px;"></div><strong><u>' + esc(r.principalName) + '</u></strong></div>' +
+        '<div>Guru Mata Pelajaran,<br/>Penyusun<div style="height:44px;"></div><strong><u>' + esc(r.teacherName) + '</u></strong></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderRppKurmer(main) {
+    if (!state.rpp) state.rpp = getDefaultRpp();
+    var r = state.rpp;
+    main.innerHTML =
+      '<div class="sl-page-head sl-no-print">' +
+        '<div><p class="sl-meta">SIT PLUS CORDOVA · Kurikulum Merdeka</p><h1 style="font-size:22px;">Modul Ajar / RPP Kurikulum Merdeka</h1></div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.syncRppFromForm()">Ambil dari Form Soal</button>' +
+          '<button type="button" class="sl-btn sl-btn-emerald" onclick="SoalinApp.generateRpp()">Buat RPP Otomatis (AI)</button>' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="window.print()">Cetak A4 / PDF</button>' +
+          '<button type="button" class="sl-btn sl-btn-sec" onclick="SoalinApp.downloadRppWord()">Download Word</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sl-card sl-no-print" style="margin-bottom:14px;">' +
+        '<div class="sl-grid-2">' +
+          '<div><label class="sl-label">Topik / Materi</label><input class="sl-input" value="' + esc(r.topic) + '" onchange="SoalinApp.updateRppField(\'topic\', this.value)" /></div>' +
+          '<div><label class="sl-label">Mata Pelajaran</label><input class="sl-input" value="' + esc(r.subject) + '" onchange="SoalinApp.updateRppField(\'subject\', this.value)" /></div>' +
+          '<div><label class="sl-label">Kelas &amp; Fase</label><input class="sl-input" value="' + esc(r.gradeClass + ' · ' + r.fase) + '" onchange="SoalinApp.updateRppField(\'gradeClass\', this.value)" /></div>' +
+          '<div><label class="sl-label">Alokasi Waktu &amp; Model</label><input class="sl-input" value="' + esc(r.alokasiWaktu) + '" onchange="SoalinApp.updateRppField(\'alokasiWaktu\', this.value)" /></div>' +
+        '</div>' +
+      '</div>' +
+      buildRppSheetHtml(r);
+  }
+
+  function render() {
+    renderNav();
+    var main = document.getElementById('sl-main-view');
+    if (!state.token || !state.user) {
+      renderLoginOrConfig();
+      return;
+    }
+    if (state.page === 'dashboard') renderDashboard(main);
+    else if (state.page === 'create') renderCreate(main);
+    else if (state.page === 'editor') renderEditor(main);
+    else if (state.page === 'kisi_kisi') renderKisiKisi(main);
+    else if (state.page === 'rpp_kurmer') renderRppKurmer(main);
+    else if (state.page === 'projects') renderProjects(main);
+    else if (state.page === 'bank') renderBank(main);
+    else if (state.page === 'export') renderExport(main);
+    else if (state.page === 'admin') renderAdmin(main);
+    else renderSimplePage(main);
+  }
+
+  async function loadInitialUserData() {
+    try {
+      var results = await Promise.all([
+        callGas('dashboard'),
+        callGas('projects_list', { page: 1, pageSize: 30 }),
+        callGas('templates_list'),
+      ]);
+      state.dashboard = results[0];
+      state.projects = results[1].items || [];
+      state.templates = results[2] || [];
+    } catch (err) {
+      toast('Gagal Memuat Data', err.message, true);
+    }
+  }
+
+  function startJobPolling(jobId) {
+    if (state.pollTimer) clearInterval(state.pollTimer);
+    state.pollTimer = setInterval(async function () {
+      try {
+        var job = await callGas('job_status', { job_id: jobId, autoAdvance: true }, 90000);
+        state.activeJob = job;
+        render();
+        if (job.status === 'Completed') {
+          clearInterval(state.pollTimer);
+          state.pollTimer = null;
+          toast('Selesai!', job.completed_count + ' soal berhasil disusun dan divalidasi.');
+          await window.SoalinApp.openProject(job.project_id);
+        } else if (job.status === 'Failed' || job.status === 'Cancelled') {
+          clearInterval(state.pollTimer);
+          state.pollTimer = null;
+          toast('Proses Berhenti', job.error_message || job.progress_message, job.status === 'Failed');
+        }
+      } catch (err) {
+        clearInterval(state.pollTimer);
+        state.pollTimer = null;
+        toast('Polling Error', err.message, true);
+      }
+    }, 1800);
+  }
+
+  window.SoalinApp = {
+    toggleDrawer: function (open) {
+      document.getElementById('sl-drawer-backdrop').classList.toggle('open', open);
+    },
+    go: async function (page) {
+      state.page = page;
+      this.toggleDrawer(false);
+      render();
+      if (!state.token) return;
+      try {
+        if (page === 'dashboard') state.dashboard = await callGas('dashboard');
+        if (page === 'projects') state.projects = (await callGas('projects_list', { page: 1, pageSize: 50 })).items || [];
+        if (page === 'bank') state.bankItems = (await callGas('bank_search', { page: 1, pageSize: 50 })).items || [];
+        if (page === 'history') state.historyItems = (await callGas('history_list', { page: 1, pageSize: 40 })).items || [];
+        if (page === 'templates') state.templates = await callGas('templates_list');
+        if (page === 'admin') state.adminData = await callGas('admin_overview');
+        render();
+      } catch (err) {
+        toast('Error', err.message, true);
+      }
+    },
+    saveGasUrlFromInput: async function (inputId) {
+      var val = document.getElementById(inputId).value.trim();
+      state.gasUrl = val;
+      localStorage.setItem('soalin_gas_url', val);
+      try {
+        var h = await callGas('health');
+        state.publicConfig = h.publicConfig;
+        toast('Terhubung ke GAS', 'Status konfigurasi: ' + (h.configReady ? 'Siap' : 'Perlu dilengkapi di Script Properties'));
+        render();
+      } catch (err) {
+        toast('Koneksi Gagal', err.message, true);
+      }
+    },
+    logout: async function () {
+      try { await callGas('auth_logout'); } catch (e) {}
+      state.token = '';
+      state.user = null;
+      localStorage.removeItem('soalin_session_token');
+      localStorage.removeItem('soalin_user');
+      render();
+    },
+    setForm: function (k, v) {
+      state.form[k] = v;
+      if (k === 'level') {
+        var opts = GRADE_BY_LEVEL[v] || GRADE_BY_LEVEL.Umum;
+        state.form.grade = opts[0] || '';
+        if (v === 'SD' || v === 'MI') state.form.optionCount = 3;
+        else if (v === 'SMP' || v === 'MTs') state.form.optionCount = 4;
+        else state.form.optionCount = 5;
+        render();
+      } else if (k === 'title' || k === 'grade') {
+        render();
+      }
+    },
+    setCount: function (type, val) { state.form.counts[type] = Math.max(0, Number(val) || 0); render(); },
+    addSubtitle: function () {
+      var el = document.getElementById('f-sub-draft');
+      if (!el || !el.value.trim()) return;
+      state.form.subtitles.push(el.value.trim());
+      render();
+    },
+    removeSubtitle: function (idx) { state.form.subtitles.splice(idx, 1); render(); },
+    toggleBloom: function (c) {
+      var idx = state.form.cognitiveLevels.indexOf(c);
+      if (idx >= 0 && state.form.cognitiveLevels.length > 1) state.form.cognitiveLevels.splice(idx, 1);
+      else if (idx === -1) state.form.cognitiveLevels.push(c);
+      render();
+    },
+    startGeneration: async function () {
+      try {
+        var payload = Object.assign({}, state.form, {
+          subtitles: state.form.subtitles.length > 0 ? state.form.subtitles : [state.form.title],
+        });
+        var job = await callGas('generate_start', payload);
+        state.activeJob = job;
+        state.activeJob.progress_percent = 10;
+        state.activeJob.progress_message = 'Memulai pemrosesan batch...';
+        render();
+        startJobPolling(job.job_id);
+      } catch (err) {
+        toast('Gagal Memulai', err.message, true);
+      }
+    },
+    cancelActiveJob: async function () {
+      if (!state.activeJob) return;
+      await callGas('job_cancel', { job_id: state.activeJob.job_id });
+      state.activeJob.status = 'Cancelled';
+      if (state.pollTimer) clearInterval(state.pollTimer);
+      render();
+    },
+    openProject: async function (id) {
+      state.activeProject = await callGas('project_get', { project_id: id });
+      state.page = 'editor';
+      render();
+    },
+    duplicateProject: async function (id) {
+      await callGas('project_duplicate', { project_id: id });
+      toast('Berhasil', 'Proyek diduplikasi.');
+      this.go('projects');
+    },
+    deleteProject: async function (id) {
+      await callGas('project_delete', { project_id: id });
+      toast('Dihapus', 'Proyek berhasil dihapus.');
+      this.go('projects');
+    },
+    setEditorMode: function (m) { state.editorMode = m; render(); },
+    updateQuestionField: async function (qId, field, value) {
+      var q = state.activeProject.questions.find(function (x) { return x.question_id === qId; });
+      if (!q) return;
+      q[field] = value;
+      state.autosaveLabel = 'Menyimpan...';
+      render();
+      try {
+        await callGas('question_update', q);
+        state.autosaveLabel = 'Tersimpan otomatis';
+        render();
+      } catch (err) {
+        state.autosaveLabel = 'Gagal simpan';
+        toast('Autosave Gagal', err.message, true);
+      }
+    },
+    addManualQuestion: async function () {
+      var q = await callGas('question_add', { project_id: state.activeProject.project_id });
+      state.activeProject.questions.push(q);
+      state.editorMode = 'edit';
+      render();
+    },
+    duplicateQuestion: async function (qId) {
+      var copy = await callGas('question_duplicate', { question_id: qId });
+      state.activeProject.questions.push(copy);
+      render();
+    },
+    deleteQuestion: async function (qId) {
+      await callGas('question_delete', { question_id: qId });
+      state.activeProject.questions = state.activeProject.questions.filter(function (x) { return x.question_id !== qId; });
+      render();
+    },
+    regenerateQuestion: async function (qId) {
+      toast('Memproses...', 'Sedang meregenerasi soal terpilih via Google AI Studio (Gemini).');
+      var newQ = await callGas('question_regenerate', { question_id: qId }, 60000);
+      state.activeProject.questions = state.activeProject.questions.map(function (x) {
+        return x.question_id === qId ? newQ : x;
+      });
+      toast('Berhasil', 'Soal berhasil dibuat ulang.');
+      render();
+    },
+    uploadQuestionImage: function (qId, input) {
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = async function () {
+        try {
+          var res = await callGas('question_upload_image', {
+            question_id: qId,
+            base64DataUrl: reader.result,
+            fileName: file.name,
+            caption: file.name,
+          });
+          var q = state.activeProject.questions.find(function (x) { return x.question_id === qId; });
+          if (q) { q.image_file_id = res.image_file_id; q.image_url = res.image_url; }
+          toast('Gambar Diunggah', 'Tersimpan aman di Google Drive.');
+          render();
+        } catch (err) {
+          toast('Upload Gagal', err.message, true);
+        }
+      };
+      reader.readAsDataURL(file);
+    },
+    saveToBank: async function (qId) {
+      var q = state.activeProject.questions.find(function (x) { return x.question_id === qId; });
+      if (!q) return;
+      await callGas('bank_save', {
+        subject: state.activeProject.subject,
+        grade: state.activeProject.grade,
+        level: state.activeProject.level,
+        language: state.activeProject.language,
+        question: q,
+      });
+      toast('Tersimpan', 'Soal ditambahkan ke Bank Soal Pribadi.');
+    },
+    toggleBankSelect: function (id, checked) { state.selectedBankIds[id] = checked; render(); },
+    toggleBankFav: async function (id) { await callGas('bank_favorite', { bank_id: id }); this.go('bank'); },
+    deleteBank: async function (id) { await callGas('bank_delete', { bank_id: id }); this.go('bank'); },
+    mergeSelectedBank: async function () {
+      var ids = Object.keys(state.selectedBankIds).filter(function (id) { return state.selectedBankIds[id]; });
+      var proj = await callGas('bank_merge_project', { bank_ids: ids });
+      state.selectedBankIds = {};
+      state.activeProject = proj;
+      state.page = 'editor';
+      toast('Berhasil', ids.length + ' soal digabung menjadi proyek baru.');
+      render();
+    },
+    applyTemplate: function (tplId) {
+      var t = state.templates.find(function (x) { return x.template_id === tplId; });
+      if (!t) return;
+      state.form.title = t.title;
+      state.form.subtitles = t.subtitles.slice();
+      state.form.subject = t.subject;
+      state.form.level = t.level;
+      state.form.grade = t.grade;
+      state.form.language = t.language;
+      state.form.description = t.description;
+      if (t.config && t.config.counts) state.form.counts = Object.assign({}, t.config.counts);
+      state.page = 'create';
+      render();
+    },
+    saveHeaderForExport: async function () {
+      var header = Object.assign({}, state.activeProject.header, {
+        institutionName: document.getElementById('ex-inst').value,
+        institutionAddress: document.getElementById('ex-addr').value,
+        examTitle: document.getElementById('ex-title').value,
+        teacherName: document.getElementById('ex-teacher').value,
+        timeAllocation: document.getElementById('ex-time').value,
+      });
+      state.activeProject = await callGas('project_update', {
+        project_id: state.activeProject.project_id,
+        header: header,
+      });
+      toast('Disimpan', 'Identitas dokumen diperbarui.');
+    },
+    runExport: async function () {
+      var out = document.getElementById('sl-export-result');
+      out.innerHTML = '<div class="sl-meta">Sedang menyusun dokumen resmi di Google Docs &amp; Drive...</div>';
+      try {
+        var res = await callGas('export_document', {
+          project_id: state.activeProject.project_id,
+          mode: document.getElementById('ex-mode').value,
+          format: document.getElementById('ex-format').value,
+          compact: document.getElementById('ex-compact') ? document.getElementById('ex-compact').checked : true,
+          includeKisiKisi: document.getElementById('ex-include-kisi') ? document.getElementById('ex-include-kisi').checked : true,
+        }, 90000);
+        var dlHtml = '<div style="margin-top:10px;padding:12px;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:8px;font-size:13px;">' +
+          '<strong>Dokumen siap!</strong><div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<a href="' + esc(res.download_url) + '" target="_blank" rel="noopener" class="sl-btn" style="text-decoration:none;">Download dari Drive</a>' +
+          '<a href="' + esc(res.view_url) + '" target="_blank" rel="noopener" class="sl-btn sl-btn-sec" style="text-decoration:none;">Buka di Drive</a>' +
+          '</div></div>';
+        out.innerHTML = dlHtml;
+        if (res.base64 && res.mime_type) {
+          var bin = atob(res.base64);
+          var arr = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+          var blob = new Blob([arr], { type: res.mime_type });
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = res.file_name + '.' + res.format;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      } catch (err) {
+        out.innerHTML = '<div style="color:var(--sl-danger);font-size:13px;">' + esc(err.message) + '</div>';
+      }
+    },
+    saveProfile: async function () {
+      state.user = await callGas('profile_update', {
+        name: document.getElementById('pr-name').value,
+        institution: document.getElementById('pr-inst').value,
+        nip: document.getElementById('pr-nip').value,
+      });
+      localStorage.setItem('soalin_user', JSON.stringify(state.user));
+      toast('Disimpan', 'Profil diperbarui.');
+      render();
+    },
+    adminTest: async function (action) {
+      try {
+        var r = await callGas(action);
+        toast('Hasil Diagnostik', JSON.stringify(r).slice(0, 140));
+      } catch (err) {
+        toast('Diagnostik Gagal', err.message, true);
+      }
+    },
+    adminLoadModels: async function () {
+      try {
+        var r = await callGas('admin_models_list');
+        state.adminModels = r.models || [];
+        toast('Model Dimuat', state.adminModels.length + ' model ditemukan dari Google AI Studio.');
+        render();
+      } catch (err) {
+        toast('Gagal Muat Model', err.message, true);
+      }
+    },
+    saveAdminConfig: async function () {
+      await callGas('admin_config_update', {
+        GEMINI_MODEL: document.getElementById('adm-model').value,
+        MAX_QUESTIONS: document.getElementById('adm-maxq').value,
+        DAILY_LIMIT: document.getElementById('adm-daily').value,
+      });
+      toast('Tersimpan', 'Konfigurasi Google AI Studio & kuota diperbarui.');
+      this.go('admin');
+    },
+    toggleUserStatus: async function (userId, nextStatus) {
+      await callGas('admin_user_update', { user_id: userId, status: nextStatus });
+      toast('Diperbarui', 'Status pengguna diubah menjadi ' + nextStatus);
+      this.go('admin');
+    },
+    syncRppFromForm: function () {
+      state.rpp = getDefaultRpp();
+      toast('Disinkronkan', 'Materi RPP diperbarui dari proyek/form aktif.');
+      render();
+    },
+    updateRppField: function (field, val) {
+      if (!state.rpp) state.rpp = getDefaultRpp();
+      state.rpp[field] = cleanAsterisks(val);
+      render();
+    },
+    generateRpp: async function () {
+      if (!state.rpp) state.rpp = getDefaultRpp();
+      toast('Menyusun RPP...', 'Menghubungi Google AI Studio (Gemini) melalui GAS...');
+      try {
+        var res = await callGas('generate_rpp', state.rpp, 90000);
+        state.rpp = Object.assign(getDefaultRpp(), (res && res.rpp) || res || {});
+        toast('RPP Siap!', 'Modul Ajar Kurikulum Merdeka selesai disusun.');
+        render();
+      } catch (err) {
+        toast('Gagal Membuat RPP', err.message, true);
+      }
+    },
+    downloadRppWord: function () {
+      if (!state.rpp) state.rpp = getDefaultRpp();
+      var html = '<html><head><meta charset="utf-8"><style>@page{size:A4;margin:1.2cm;}body{font-family:Calibri,Amiri,sans-serif;font-size:10pt;}table{width:100%;border-collapse:collapse;}td,th{border:1px solid #94A3B8;padding:4px 6px;}</style></head><body>' + buildRppSheetHtml(state.rpp) + '</body></html>';
+      var blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'SIT-PLUS-CORDOVA-RPP-Kurmer.doc';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast('RPP Word Diunduh', 'File .doc siap dibuka di Microsoft Word.');
+    },
+  };
+
+  (async function bootstrap() {
+    try {
+      if (state.gasUrl && state.gasUrl.indexOf('PASTE_YOUR_DEPLOYMENT_ID') === -1) {
+        var h = await callGas('health');
+        state.publicConfig = h.publicConfig;
+      }
+      if (state.token && state.user) {
+        await loadInitialUserData();
+      }
+    } catch (e) {}
+    render();
+  })();
+})();
+</script>
